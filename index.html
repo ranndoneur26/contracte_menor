@@ -1,0 +1,2013 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ContratoMenor.app — Gestión de contratos menores</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F3EEE3;
+  --paper-deep:#EAE2CE;
+  --card:#FBF8F1;
+  --ink:#241F17;
+  --ink-soft:#5A5142;
+  --navy:#132038;
+  --navy-2:#1B2E4C;
+  --navy-3:#24406A;
+  --gold:#A9813F;
+  --gold-light:#D8BE84;
+  --green:#3E6B4C;
+  --green-bg:#E6EEE4;
+  --amber:#9C6B24;
+  --amber-bg:#F3E6CC;
+  --red:#933A34;
+  --red-bg:#F3DEDA;
+  --line:#D9CFB6;
+  --line-strong:#C3B693;
+  --white:#FFFDF8;
+  --font-serif:'Source Serif 4', Georgia, 'Iowan Old Style', serif;
+  --font-sans:'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono:'IBM Plex Mono', ui-monospace, monospace;
+  --radius-s:3px;
+  --radius-m:5px;
+  --shadow-1: 0 1px 2px rgba(19,32,56,0.06);
+  --shadow-2: 0 6px 20px rgba(19,32,56,0.14);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  font-family:var(--font-sans);
+  background:var(--paper);
+  color:var(--ink);
+  font-size:14.5px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{font-family:var(--font-serif); font-weight:600; margin:0; color:var(--navy);}
+a{color:inherit;}
+button{font-family:inherit;}
+::selection{background:var(--gold-light); color:var(--navy);}
+:focus-visible{outline:2px solid var(--navy-3); outline-offset:2px;}
+
+/* ---------- Layout shell ---------- */
+#app{display:flex; min-height:100vh;}
+
+.sidebar{
+  width:248px; flex-shrink:0; background:var(--navy);
+  color:#DCE3EE; display:flex; flex-direction:column;
+  position:fixed; top:0; left:0; bottom:0; overflow-y:auto;
+}
+.sidebar-brand{
+  padding:24px 22px 18px; border-bottom:1px solid rgba(255,255,255,0.09);
+}
+.sidebar-brand .mark{
+  font-family:var(--font-serif); font-size:20px; font-weight:600; color:var(--white); letter-spacing:0.01em;
+}
+.sidebar-brand .mark em{color:var(--gold-light); font-style:normal;}
+.sidebar-brand .sub{font-size:11.5px; color:#93A1BC; margin-top:4px;}
+.sidebar-entidad{
+  padding:16px 22px; border-bottom:1px solid rgba(255,255,255,0.09);
+  font-size:12px; color:#A9B4CB; line-height:1.55;
+}
+.sidebar-entidad strong{display:block; color:#EDF1F8; font-size:13px; font-weight:600; margin-bottom:2px; font-family:var(--font-serif);}
+.nav-group{padding:14px 12px;}
+.nav-group-label{font-size:10.5px; text-transform:uppercase; letter-spacing:0.09em; color:#7686A3; padding:8px 10px 6px;}
+.nav-item{
+  display:flex; align-items:center; gap:10px; width:100%;
+  padding:9px 12px; border-radius:var(--radius-m); border:none; background:none;
+  color:#C4CDDF; font-size:13.5px; text-align:left; cursor:pointer;
+  transition:background .12s ease, color .12s ease;
+}
+.nav-item:hover{background:rgba(255,255,255,0.06); color:#fff;}
+.nav-item.active{background:var(--navy-3); color:#fff; box-shadow:inset 3px 0 0 var(--gold-light);}
+.nav-item .ico{width:17px; text-align:center; opacity:.9; font-family:var(--font-mono); font-size:12px;}
+.sidebar-footer{margin-top:auto; padding:16px 22px; font-size:11px; color:#6E7C99; border-top:1px solid rgba(255,255,255,0.09);}
+
+.main{margin-left:248px; flex:1; min-width:0; display:flex; flex-direction:column;}
+.topbar{
+  height:62px; background:var(--white); border-bottom:1px solid var(--line);
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 26px; position:sticky; top:0; z-index:20;
+}
+.topbar-title{font-family:var(--font-serif); font-size:18px; color:var(--navy); font-weight:600;}
+.topbar-sub{font-size:12px; color:var(--ink-soft); margin-top:1px;}
+.topbar-right{display:flex; align-items:center; gap:14px;}
+.badge-user{
+  display:flex; align-items:center; gap:9px; padding:6px 12px 6px 6px;
+  border:1px solid var(--line); border-radius:20px; background:var(--paper);
+}
+.badge-user .avatar{
+  width:26px; height:26px; border-radius:50%; background:var(--navy); color:var(--gold-light);
+  display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:600; font-family:var(--font-serif);
+}
+.badge-user .who{font-size:12.5px; line-height:1.25;}
+.badge-user .who small{display:block; color:var(--ink-soft); font-size:10.5px;}
+
+.content{padding:26px 30px 60px; max-width:1280px;}
+
+/* ---------- Common components ---------- */
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:7px;
+  padding:9px 17px; border-radius:20px; border:1px solid var(--navy);
+  background:var(--navy); color:#fff; font-size:13px; font-weight:600; cursor:pointer;
+  transition:transform .08s ease, background .12s ease, box-shadow .12s ease;
+}
+.btn:hover{background:var(--navy-2);}
+.btn:active{transform:translateY(1px);}
+.btn.secondary{background:transparent; color:var(--navy); border:1px solid var(--line-strong);}
+.btn.secondary:hover{background:var(--paper-deep);}
+.btn.gold{background:var(--gold); border-color:var(--gold);}
+.btn.gold:hover{background:#96712F;}
+.btn.danger{background:transparent; color:var(--red); border:1px solid var(--red);}
+.btn.danger:hover{background:var(--red-bg);}
+.btn.small{padding:6px 12px; font-size:12px;}
+.btn:disabled{opacity:.45; cursor:not-allowed;}
+
+.panel{background:var(--card); border:1px solid var(--line); border-radius:var(--radius-m); box-shadow:var(--shadow-1);}
+.panel-head{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:16px 20px; border-bottom:1px solid var(--line);
+}
+.panel-head h3{font-size:15.5px;}
+.panel-head .hint{font-size:11.5px; color:var(--ink-soft); font-weight:400; font-family:var(--font-sans); margin-top:2px;}
+.panel-body{padding:18px 20px;}
+
+.grid-kpi{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:22px;}
+@media (max-width:1080px){.grid-kpi{grid-template-columns:repeat(2,1fr);}}
+.kpi{
+  background:var(--card); border:1px solid var(--line); border-radius:var(--radius-m);
+  padding:16px 18px; position:relative; overflow:hidden;
+}
+.kpi::before{content:""; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--gold);}
+.kpi .label{font-size:11.5px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.05em;}
+.kpi .value{font-family:var(--font-serif); font-size:26px; color:var(--navy); margin-top:6px; font-weight:600;}
+.kpi .foot{font-size:11.5px; color:var(--ink-soft); margin-top:5px;}
+.kpi.alert::before{background:var(--red);}
+.kpi.ok::before{background:var(--green);}
+
+.chip{
+  display:inline-flex; align-items:center; gap:5px; padding:3px 10px; border-radius:20px;
+  font-size:11px; font-weight:600; letter-spacing:.02em; white-space:nowrap;
+}
+.chip.borrador{background:#E7E2D4; color:#6B6250;}
+.chip.en_tramite{background:#DDE6F2; color:#2A4E7C;}
+.chip.aprobado{background:var(--amber-bg); color:var(--amber);}
+.chip.publicado{background:#DCE9F5; color:#245A8F;}
+.chip.registrado{background:var(--green-bg); color:var(--green);}
+.chip.bloqueante{background:var(--red-bg); color:var(--red);}
+.chip.aviso{background:var(--amber-bg); color:var(--amber);}
+.chip.info{background:#DDE6F2; color:#2A4E7C;}
+.chip.ok{background:var(--green-bg); color:var(--green);}
+
+table{width:100%; border-collapse:collapse; font-size:13px;}
+th{
+  text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.05em;
+  color:var(--ink-soft); font-weight:600; padding:8px 12px; border-bottom:1px solid var(--line-strong);
+}
+td{padding:11px 12px; border-bottom:1px solid var(--line);}
+tr:last-child td{border-bottom:none;}
+tbody tr{transition:background .1s ease;}
+tbody tr:hover{background:var(--paper);}
+.num{font-variant-numeric:tabular-nums; text-align:right;}
+.tright{text-align:right;}
+
+.field{margin-bottom:16px;}
+.field label{display:block; font-size:12px; font-weight:600; color:var(--navy); margin-bottom:6px;}
+.field .desc{font-size:11.5px; color:var(--ink-soft); margin-top:5px;}
+.field input[type=text], .field input[type=number], .field input[type=date], .field select, .field textarea{
+  width:100%; padding:9px 11px; border:1px solid var(--line-strong); border-radius:var(--radius-s);
+  background:var(--white); font-size:13.5px; font-family:inherit; color:var(--ink);
+}
+.field input:focus, .field select:focus, .field textarea:focus{border-color:var(--navy-3);}
+.field textarea{resize:vertical; min-height:64px;}
+.row2{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+.row3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px;}
+@media (max-width:760px){.row2,.row3{grid-template-columns:1fr;}}
+
+.progress{height:7px; border-radius:5px; background:var(--paper-deep); overflow:hidden; border:1px solid var(--line);}
+.progress > div{height:100%; background:var(--green);}
+.progress.warn > div{background:var(--amber);}
+.progress.bad > div{background:var(--red);}
+
+.toast-wrap{position:fixed; right:24px; bottom:24px; z-index:200; display:flex; flex-direction:column; gap:10px;}
+.toast{
+  background:var(--navy); color:#fff; padding:12px 18px; border-radius:var(--radius-m);
+  font-size:13px; box-shadow:var(--shadow-2); border-left:3px solid var(--gold-light);
+  animation:toastin .25s ease;
+}
+@keyframes toastin{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
+
+/* ---------- Wizard ---------- */
+.steps-bar{display:flex; align-items:center; margin-bottom:24px;}
+.step-node{display:flex; align-items:center; gap:9px; flex:1;}
+.step-node .circle{
+  width:28px; height:28px; border-radius:50%; border:1.5px solid var(--line-strong);
+  display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:600;
+  color:var(--ink-soft); background:var(--white); flex-shrink:0; font-family:var(--font-serif);
+}
+.step-node.active .circle{border-color:var(--navy); background:var(--navy); color:#fff;}
+.step-node.done .circle{border-color:var(--green); background:var(--green); color:#fff;}
+.step-node .label{font-size:12px; color:var(--ink-soft);}
+.step-node.active .label{color:var(--navy); font-weight:600;}
+.step-connector{flex:1; height:1px; background:var(--line-strong); margin:0 6px;}
+
+.wizard-actions{display:flex; justify-content:space-between; margin-top:24px; padding-top:18px; border-top:1px solid var(--line);}
+
+.offer-row{display:grid; grid-template-columns:2fr 1.3fr 1fr auto; gap:10px; align-items:end; margin-bottom:10px;}
+@media (max-width:760px){.offer-row{grid-template-columns:1fr;}}
+
+.checklist-item{
+  display:flex; gap:12px; padding:12px 0; border-bottom:1px solid var(--line);
+}
+.checklist-item:last-child{border-bottom:none;}
+.checklist-item .dot{width:9px; height:9px; border-radius:50%; margin-top:5px; flex-shrink:0;}
+.checklist-item.bloqueante .dot{background:var(--red);}
+.checklist-item.aviso .dot{background:var(--amber);}
+.checklist-item.info .dot{background:#2A4E7C;}
+.checklist-item .txt{font-size:13px;}
+.checklist-item .txt small{display:block; color:var(--ink-soft); font-size:11px; margin-top:2px; text-transform:uppercase; letter-spacing:.04em;}
+
+/* ---------- Modal ---------- */
+.modal-overlay{
+  position:fixed; inset:0; background:rgba(19,26,42,0.55); z-index:100;
+  display:flex; align-items:flex-start; justify-content:center; padding:34px 20px; overflow-y:auto;
+}
+.modal-box{
+  background:var(--paper); border-radius:var(--radius-m); width:100%; max-width:940px;
+  box-shadow:var(--shadow-2); border:1px solid var(--line-strong);
+}
+.modal-head{
+  display:flex; align-items:flex-start; justify-content:space-between; padding:20px 24px;
+  border-bottom:1px solid var(--line); background:var(--white); border-radius:5px 5px 0 0;
+}
+.modal-head h2{font-size:19px;}
+.modal-head .meta{font-size:12px; color:var(--ink-soft); margin-top:4px;}
+.modal-close{background:none; border:none; font-size:20px; color:var(--ink-soft); cursor:pointer; line-height:1; padding:4px 8px;}
+.modal-close:hover{color:var(--ink);}
+.tabs{display:flex; gap:2px; padding:0 24px; background:var(--white); border-bottom:1px solid var(--line);}
+.tab-btn{
+  padding:11px 15px; font-size:12.5px; font-weight:600; color:var(--ink-soft); background:none; border:none;
+  border-bottom:2px solid transparent; cursor:pointer; margin-bottom:-1px;
+}
+.tab-btn:hover{color:var(--navy);}
+.tab-btn.active{color:var(--navy); border-bottom-color:var(--gold);}
+.modal-body{padding:22px 24px; max-height:66vh; overflow-y:auto;}
+.modal-foot{display:flex; justify-content:space-between; align-items:center; padding:16px 24px; border-top:1px solid var(--line); background:var(--white); border-radius:0 0 5px 5px;}
+
+/* ---------- Printable document sheet ---------- */
+.doc-sheet{
+  background:var(--white); border:1px solid var(--line-strong); padding:34px 38px;
+  font-family:var(--font-serif); font-size:13px; color:#1c1a14; line-height:1.65; max-width:720px; margin:0 auto;
+}
+.doc-sheet h4{font-size:15px; text-align:center; margin-bottom:4px; letter-spacing:.01em;}
+.doc-sheet .doc-entidad{text-align:center; font-size:11.5px; font-family:var(--font-sans); color:#555; margin-bottom:18px;}
+.doc-sheet .doc-meta{display:flex; justify-content:space-between; font-family:var(--font-sans); font-size:11px; color:#555; margin-bottom:16px; border-bottom:1px solid #ddd; padding-bottom:10px;}
+.doc-sheet p{margin:0 0 11px;}
+.doc-sheet table{margin:14px 0; font-size:12.5px; font-family:var(--font-sans);}
+.doc-sheet th{font-family:var(--font-sans);}
+.doc-sheet .doc-sign{margin-top:38px; display:flex; justify-content:space-between; font-family:var(--font-sans); font-size:11.5px;}
+.doc-sheet .doc-sign div{width:44%; border-top:1px solid #999; padding-top:6px; text-align:center; color:#555;}
+
+.empty-state{padding:38px 20px; text-align:center; color:var(--ink-soft);}
+.empty-state .big{font-family:var(--font-serif); font-size:16px; color:var(--navy); margin-bottom:6px;}
+
+.mini-list{list-style:none; margin:0; padding:0;}
+.mini-list li{display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px solid var(--line); font-size:12.5px;}
+.mini-list li:last-child{border-bottom:none;}
+
+.search-input{
+  padding:9px 13px; border:1px solid var(--line-strong); border-radius:20px; font-size:13px;
+  width:230px; background:var(--white); font-family:inherit;
+}
+.filters-bar{display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:16px;}
+.filters-bar select{padding:8px 11px; border:1px solid var(--line-strong); border-radius:var(--radius-s); font-size:12.5px; background:var(--white); font-family:inherit;}
+
+@media print{
+  .sidebar, .topbar, .modal-overlay .modal-head, .modal-overlay .tabs, .modal-overlay .modal-foot, .no-print{display:none !important;}
+  .modal-overlay{position:static; background:none; padding:0; display:block;}
+  .modal-box{box-shadow:none; border:none; max-width:100%;}
+  .modal-body{max-height:none; overflow:visible; padding:0;}
+  body{background:#fff;}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="toast-wrap" id="toastWrap"></div>
+
+<!-- Librerías para exportación de documentos a PDF real (renderizan la hoja tal cual se ve en pantalla) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script>
+"use strict";
+
+/* =========================================================================
+   DATOS MAESTROS Y CONFIGURACIÓN
+   ========================================================================= */
+
+const CONFIG = {
+  entidad: "Ayuntamiento de Riofrío del Tajo",
+  cif: "P-4512300-B",
+  sede: "Plaza Mayor, 1 — 45123 Riofrío del Tajo (Toledo)",
+  secretaria: "María Dolores Iglesias Cantón, Secretaria-Interventora",
+  umbralObra: 40000,
+  umbralServicio: 15000,
+  umbralSuministro: 15000,
+  duracionMaxMeses: 12,
+  ivaDefault: 21,
+  umbralRegistro: 5000,
+  umbral347: 3005.06
+};
+
+const FAMILIAS = [
+  "Obras de pavimentación y viario",
+  "Mantenimiento de edificios municipales",
+  "Servicios de limpieza viaria",
+  "Suministro de material de oficina",
+  "Servicios informáticos y comunicaciones",
+  "Suministro eléctrico y energético",
+  "Servicios culturales y festejos",
+  "Redacción de proyectos técnicos"
+];
+
+const DEPARTAMENTOS = [
+  "Secretaría",
+  "Intervención",
+  "Urbanismo y Obras",
+  "Servicios Sociales",
+  "Cultura y Festejos",
+  "Alcaldía"
+];
+
+const TIPOS = [
+  { id: "obra", label: "Obra" },
+  { id: "servicio", label: "Servicio" },
+  { id: "suministro", label: "Suministro" }
+];
+
+const IVA_OPCIONES = [0, 4, 10, 21];
+
+const FISCAL_CATEGORIES = [
+  { id: "persona_juridica", label: "Persona jurídica (sociedad mercantil)", retencion: 0 },
+  { id: "autonomo_profesional", label: "Autónomo — actividad profesional", retencion: 15 },
+  { id: "autonomo_reducido", label: "Autónomo — inicio de actividad (retención reducida)", retencion: 7 },
+  { id: "actividad_artistica", label: "Actividad artística", retencion: 15 },
+  { id: "actividad_deportiva", label: "Actividad deportiva", retencion: 15 },
+  { id: "agraria", label: "Actividad agrícola, forestal o ganadera", retencion: 2 },
+  { id: "obra_instalaciones", label: "Empresario — obras e instalaciones", retencion: 1 }
+];
+
+const ESTADOS = [
+  { id: "borrador", label: "Borrador" },
+  { id: "en_tramite", label: "En trámite" },
+  { id: "aprobado", label: "Aprobado" },
+  { id: "publicado", label: "Publicado" },
+  { id: "registrado", label: "Registrado" }
+];
+
+/* Expedientes de ejemplo, con distintos estados, familias y niveles de riesgo */
+const EXPEDIENTES_INICIALES = [
+  {
+    id: "e1", numero: "CM-2026-014", tipo: "suministro",
+    familia: "Suministro de material de oficina", departamento: "Secretaría",
+    objeto: "Suministro de material fungible de oficina para dependencias municipales del segundo semestre",
+    credito: "920.22100", base: 3200, ivaRate: 21, duracionMeses: 3,
+    fechaInicio: "2026-08-10", fechaCreacion: "2026-08-02", estado: "registrado",
+    ofertas: [
+      { empresa: "Papelería Alfa S.L.", nif: "B12345678", precio: 3200 },
+      { empresa: "Suministros Central S.L.", nif: "B22334455", precio: 3350 },
+      { empresa: "Office Sur S.A.", nif: "A33445566", precio: 3290 }
+    ],
+    adjudicatario: { empresa: "Papelería Alfa S.L.", nif: "B12345678", categoriaFiscal: "persona_juridica" },
+    publicado: true, registrado: true,
+    observaciones: "Proveedor habitual de la corporación."
+  },
+  {
+    id: "e2", numero: "CM-2026-013", tipo: "servicio",
+    familia: "Servicios de limpieza viaria", departamento: "Urbanismo y Obras",
+    objeto: "Servicio de limpieza y baldeo de calles del casco urbano durante el ejercicio en curso",
+    credito: "453.22700", base: 14200, ivaRate: 21, duracionMeses: 12,
+    fechaInicio: "2026-01-15", fechaCreacion: "2026-01-05", estado: "aprobado",
+    ofertas: [
+      { empresa: "Limpiezas Tajo S.L.", nif: "B87654321", precio: 14200 },
+      { empresa: "EcoUrbe Servicios S.L.", nif: "B44556677", precio: 14650 }
+    ],
+    adjudicatario: { empresa: "Limpiezas Tajo S.L.", nif: "B87654321", categoriaFiscal: "persona_juridica" },
+    publicado: false, registrado: true,
+    observaciones: "Próximo al límite legal de servicios; vigilar renovación."
+  },
+  {
+    id: "e3", numero: "CM-2026-012", tipo: "obra",
+    familia: "Obras de pavimentación y viario", departamento: "Urbanismo y Obras",
+    objeto: "Reparación puntual del pavimento y aceras en calle Real, tramo norte",
+    credito: "1532.61100", base: 18500, ivaRate: 21, duracionMeses: 2,
+    fechaInicio: "2025-11-05", fechaCreacion: "2025-10-20", estado: "publicado",
+    ofertas: [
+      { empresa: "Construcciones Serrano S.L.", nif: "B11223344", precio: 18500 },
+      { empresa: "Pavimentos Castilla S.A.", nif: "A55667788", precio: 19200 },
+      { empresa: "Obras Tajo-Alberche S.L.", nif: "B66778899", precio: 18950 }
+    ],
+    adjudicatario: { empresa: "Construcciones Serrano S.L.", nif: "B11223344", categoriaFiscal: "obra_instalaciones" },
+    publicado: true, registrado: true,
+    observaciones: ""
+  },
+  {
+    id: "e4", numero: "CM-2026-011", tipo: "obra",
+    familia: "Obras de pavimentación y viario", departamento: "Urbanismo y Obras",
+    objeto: "Bacheo y reposición de firme en viales del polígono industrial",
+    credito: "1532.61100", base: 24000, ivaRate: 21, duracionMeses: 3,
+    fechaInicio: "2026-04-20", fechaCreacion: "2026-04-10", estado: "en_tramite",
+    ofertas: [
+      { empresa: "Asfaltos del Tajo S.L.", nif: "B99887766", precio: 24000 }
+    ],
+    adjudicatario: { empresa: "Asfaltos del Tajo S.L.", nif: "B99887766", categoriaFiscal: "obra_instalaciones" },
+    publicado: false, registrado: false,
+    observaciones: "Revisar acumulado de la familia de obra viaria antes de aprobar."
+  },
+  {
+    id: "e5", numero: "CM-2026-010", tipo: "servicio",
+    familia: "Servicios informáticos y comunicaciones", departamento: "Secretaría",
+    objeto: "Mantenimiento y soporte técnico de sistemas informáticos y red municipal",
+    credito: "920.21600", base: 9800, ivaRate: 21, duracionMeses: 12,
+    fechaInicio: "2026-02-01", fechaCreacion: "2026-01-22", estado: "aprobado",
+    ofertas: [
+      { empresa: "Javier Ruiz Pérez", nif: "12345678Z", precio: 9800 },
+      { empresa: "InfoRed Soluciones S.L.", nif: "B77889900", precio: 10200 },
+      { empresa: "Sistemas Tajo S.L.", nif: "B12312312", precio: 9950 }
+    ],
+    adjudicatario: { empresa: "Javier Ruiz Pérez", nif: "12345678Z", categoriaFiscal: "autonomo_profesional" },
+    publicado: false, registrado: true,
+    observaciones: ""
+  },
+  {
+    id: "e6", numero: "CM-2026-009", tipo: "suministro",
+    familia: "Suministro eléctrico y energético", departamento: "Intervención",
+    objeto: "Suministro de energía eléctrica para el alumbrado público municipal",
+    credito: "165.22100", base: 13500, ivaRate: 21, duracionMeses: 12,
+    fechaInicio: "2025-10-01", fechaCreacion: "2025-09-18", estado: "registrado",
+    ofertas: [
+      { empresa: "Energía Ibérica Comercializadora S.L.", nif: "B55443322", precio: 13500 },
+      { empresa: "Luz Peninsular S.A.", nif: "A66554433", precio: 13980 }
+    ],
+    adjudicatario: { empresa: "Energía Ibérica Comercializadora S.L.", nif: "B55443322", categoriaFiscal: "persona_juridica" },
+    publicado: true, registrado: true,
+    observaciones: "Suministro de tracto sucesivo."
+  },
+  {
+    id: "e7", numero: "CM-2026-008", tipo: "servicio",
+    familia: "Servicios culturales y festejos", departamento: "Cultura y Festejos",
+    objeto: "varios servicios para fiestas patronales",
+    credito: "338.22699", base: 7200, ivaRate: 21, duracionMeses: 1,
+    fechaInicio: "2026-06-15", fechaCreacion: "2026-06-01", estado: "borrador",
+    ofertas: [],
+    adjudicatario: null,
+    publicado: false, registrado: false,
+    observaciones: "Pendiente de concretar objeto y recabar ofertas."
+  },
+  {
+    id: "e8", numero: "CM-2026-007", tipo: "servicio",
+    familia: "Servicios culturales y festejos", departamento: "Cultura y Festejos",
+    objeto: "Actuación musical del grupo folclórico local en las fiestas patronales",
+    credito: "338.22699", base: 4500, ivaRate: 21, duracionMeses: 1,
+    fechaInicio: "2026-06-20", fechaCreacion: "2026-06-05", estado: "aprobado",
+    ofertas: [
+      { empresa: "Asociación Folclórica Ruiseñor", nif: "G12345678", precio: 4500 }
+    ],
+    adjudicatario: { empresa: "Asociación Folclórica Ruiseñor", nif: "G12345678", categoriaFiscal: "actividad_artistica" },
+    publicado: false, registrado: false,
+    observaciones: ""
+  }
+];
+
+/* =========================================================================
+   UTILIDADES
+   ========================================================================= */
+
+function fmtEUR(n){
+  if(n===null || n===undefined || isNaN(n)) return "—";
+  return new Intl.NumberFormat('es-ES',{style:'currency',currency:'EUR',minimumFractionDigits:2}).format(n);
+}
+function fmtDate(d){
+  if(!d) return "—";
+  const dt = new Date(d + (String(d).length<=10?'T00:00:00':''));
+  return dt.toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit',year:'numeric'});
+}
+function fmtDateLong(d){
+  const dt = new Date(d + (String(d).length<=10?'T00:00:00':''));
+  return dt.toLocaleDateString('es-ES',{day:'numeric',month:'long',year:'numeric'});
+}
+function todayISO(){ return new Date().toISOString().slice(0,10); }
+function uid(){ return 'e' + Math.random().toString(36).slice(2,9); }
+function escapeHTML(s){
+  return String(s===undefined||s===null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function etiquetaTipo(t){ const f = TIPOS.find(x=>x.id===t); return f?f.label:t; }
+function etiquetaEstado(e){ const f = ESTADOS.find(x=>x.id===e); return f?f.label:e; }
+function categoriaFiscalLabel(id){ const c = FISCAL_CATEGORIES.find(x=>x.id===id); return c?c.label:'—'; }
+function categoriaFiscalRetencion(id){ const c = FISCAL_CATEGORIES.find(x=>x.id===id); return c?c.retencion:0; }
+
+/* =========================================================================
+   REGLAS DE NEGOCIO Y CÁLCULOS NORMATIVOS
+   ========================================================================= */
+
+function limiteFor(tipo){
+  if(tipo==='obra') return CONFIG.umbralObra;
+  if(tipo==='servicio') return CONFIG.umbralServicio;
+  return CONFIG.umbralSuministro;
+}
+
+function calcularFiscal(exp){
+  const base = Number(exp.base) || 0;
+  const ivaRate = (exp.ivaRate!==undefined && exp.ivaRate!==null) ? Number(exp.ivaRate) : CONFIG.ivaDefault;
+  const iva = base * ivaRate / 100;
+  const totalConIva = base + iva;
+  const catId = exp.adjudicatario ? exp.adjudicatario.categoriaFiscal : null;
+  const retRate = catId ? categoriaFiscalRetencion(catId) : 0;
+  const retencion = base * retRate / 100;
+  const neto = totalConIva - retencion;
+  return { base, ivaRate, iva, totalConIva, retRate, retencion, neto };
+}
+
+/* Riesgo de fraccionamiento: acumulado de la misma familia/tipo en ventana de 12 meses */
+function familiaAcumulada(exp, all){
+  const limite = limiteFor(exp.tipo);
+  const fin = new Date(exp.fechaInicio);
+  const inicioVentana = new Date(fin);
+  inicioVentana.setMonth(inicioVentana.getMonth() - 12);
+  const relacionados = all.filter(o =>
+    o.familia === exp.familia && o.tipo === exp.tipo &&
+    new Date(o.fechaInicio) <= fin && new Date(o.fechaInicio) > inicioVentana
+  );
+  const total = relacionados.reduce((s,o)=> s + (Number(o.base)||0), 0);
+  return { total, limite, ratio: limite>0 ? total/limite : 0, relacionados };
+}
+
+const OBJETOS_GENERICOS = ['varios','diversos','generales','material diverso','trabajos varios','servicios varios','servicios generales','suministros varios','obras varias','gastos diversos'];
+
+function esObjetoGenerico(texto){
+  if(!texto) return true;
+  const t = texto.trim().toLowerCase();
+  if(t.length < 18) return true;
+  return OBJETOS_GENERICOS.some(g => t.includes(g));
+}
+
+/* Devuelve el listado de incidencias de cumplimiento de un expediente */
+function evaluarCumplimiento(exp, all){
+  const issues = [];
+  const limite = limiteFor(exp.tipo);
+
+  if(!exp.adjudicatario){
+    issues.push({ nivel:'bloqueante', categoria:'Adjudicatario', mensaje:'No se ha propuesto adjudicatario para el expediente.' });
+  }
+
+  if(Number(exp.base) > limite){
+    issues.push({ nivel:'bloqueante', categoria:'Umbral legal', mensaje:
+      `La base (${fmtEUR(exp.base)}) supera el límite legal de contrato menor de ${etiquetaTipo(exp.tipo).toLowerCase()} (${fmtEUR(limite)}, sin IVA).` });
+  }
+
+  const frac = familiaAcumulada(exp, all);
+  if(frac.ratio >= 1){
+    issues.push({ nivel:'bloqueante', categoria:'Fraccionamiento', mensaje:
+      `Riesgo de fraccionamiento del objeto contractual: la familia "${exp.familia}" acumula ${fmtEUR(frac.total)} en los últimos 12 meses, superando el límite de ${fmtEUR(frac.limite)}.` });
+  } else if(frac.ratio >= 0.85){
+    issues.push({ nivel:'aviso', categoria:'Fraccionamiento', mensaje:
+      `Atención al posible fraccionamiento: la familia "${exp.familia}" acumula ${fmtEUR(frac.total)} (${Math.round(frac.ratio*100)}% del límite) en los últimos 12 meses.` });
+  }
+
+  if(esObjetoGenerico(exp.objeto)){
+    issues.push({ nivel:'aviso', categoria:'Objeto del contrato', mensaje:
+      'El objeto descrito es genérico o poco preciso. Se recomienda concretar el alcance exacto de la prestación para evitar indicios de fraccionamiento.' });
+  }
+
+  const esEnergetico = exp.familia === 'Suministro eléctrico y energético';
+  if(exp.duracionMeses > CONFIG.duracionMaxMeses && !(esEnergetico && exp.duracionMeses <= 60)){
+    issues.push({ nivel:'aviso', categoria:'Duración', mensaje:
+      `La duración prevista (${exp.duracionMeses} meses) supera los ${CONFIG.duracionMaxMeses} meses generales sin admitir prórroga.` });
+  }
+
+  const numOfertas = exp.ofertas ? exp.ofertas.length : 0;
+  if(numOfertas === 0){
+    issues.push({ nivel:'bloqueante', categoria:'Concurrencia', mensaje:
+      'No consta ninguna oferta ni justificación documentada de precio de mercado.' });
+  } else if(numOfertas < 3){
+    issues.push({ nivel:'aviso', categoria:'Concurrencia', mensaje:
+      `Solo ${numOfertas===1?'se ha':'se han'} incorporado ${numOfertas} oferta${numOfertas===1?'':'s'}. Se recomienda acreditar al menos tres presupuestos comparables o justificar expresamente la concurrencia limitada.` });
+  }
+
+  if(Number(exp.base) > CONFIG.umbralRegistro){
+    issues.push({ nivel:'info', categoria:'Registro', mensaje:
+      `El expediente supera ${fmtEUR(CONFIG.umbralRegistro)} de base y requiere inscripción en el Registro de Contratos del Sector Público.`, registroRequerido:true });
+  }
+
+  return issues;
+}
+
+function tieneBloqueantes(exp, all){
+  return evaluarCumplimiento(exp, all).some(i => i.nivel === 'bloqueante');
+}
+
+/* Modelo 347: obligación informativa cuando el acumulado anual por NIF supera el umbral */
+function calc347PorNif(nif, all, year){
+  const relevantes = all.filter(o => o.adjudicatario && o.adjudicatario.nif === nif && new Date(o.fechaInicio).getFullYear() === year);
+  const total = relevantes.reduce((s,o) => s + calcularFiscal(o).totalConIva, 0);
+  return { total, obligacion: total > CONFIG.umbral347, relevantes };
+}
+
+function resumen347(all){
+  const year = new Date().getFullYear();
+  const porNif = {};
+  all.forEach(exp => {
+    if(!exp.adjudicatario) return;
+    const nif = exp.adjudicatario.nif;
+    if(new Date(exp.fechaInicio).getFullYear() !== year) return;
+    if(!porNif[nif]) porNif[nif] = { nif, empresa: exp.adjudicatario.empresa, total:0, expedientes:[] };
+    porNif[nif].total += calcularFiscal(exp).totalConIva;
+    porNif[nif].expedientes.push(exp);
+  });
+  return Object.values(porNif).map(r => ({...r, obligacion: r.total > CONFIG.umbral347}))
+    .sort((a,b)=> b.total-a.total);
+}
+
+/* =========================================================================
+   GENERACIÓN DOCUMENTAL
+   ========================================================================= */
+
+function docCabecera(titulo, exp){
+  return `
+    <h4>${escapeHTML(titulo)}</h4>
+    <div class="doc-entidad">${escapeHTML(CONFIG.entidad)} · ${escapeHTML(CONFIG.cif)}<br>${escapeHTML(CONFIG.sede)}</div>
+    <div class="doc-meta">
+      <span>Expediente ${escapeHTML(exp.numero)}</span>
+      <span>Fecha: ${fmtDateLong(todayISO())}</span>
+    </div>`;
+}
+
+function docTablaDatos(exp){
+  const fisc = calcularFiscal(exp);
+  return `
+    <table>
+      <tr><th>Departamento</th><td>${escapeHTML(exp.departamento)}</td><th>Tipo</th><td>${escapeHTML(etiquetaTipo(exp.tipo))}</td></tr>
+      <tr><th>Familia</th><td colspan="3">${escapeHTML(exp.familia)}</td></tr>
+      <tr><th>Aplicación presupuestaria</th><td>${escapeHTML(exp.credito)}</td><th>Duración</th><td>${exp.duracionMeses} meses</td></tr>
+      <tr><th>Fecha de inicio</th><td>${fmtDate(exp.fechaInicio)}</td><th>Base imponible</th><td>${fmtEUR(fisc.base)}</td></tr>
+      <tr><th>IVA (${fisc.ivaRate}%)</th><td>${fmtEUR(fisc.iva)}</td><th>Total con IVA</th><td>${fmtEUR(fisc.totalConIva)}</td></tr>
+    </table>`;
+}
+
+function docFirma(izq, der){
+  return `<div class="doc-sign"><div>${escapeHTML(izq)}</div><div>${escapeHTML(der)}</div></div>`;
+}
+
+function generarMemoria(exp){
+  const frac = familiaAcumulada(exp, App.state.expedientes);
+  return `
+    ${docCabecera('Memoria justificativa de la necesidad del contrato', exp)}
+    <p>Por la presente memoria se justifica la necesidad de tramitar el expediente de contrato menor de
+    <strong>${escapeHTML(etiquetaTipo(exp.tipo).toLowerCase())}</strong> que se describe a continuación, de conformidad con la normativa
+    reguladora de la contratación del sector público y con los umbrales aplicables a los contratos menores.</p>
+    <p><strong>Objeto:</strong> ${escapeHTML(exp.objeto)}.</p>
+    <p><strong>Justificación de la necesidad:</strong> la prestación descrita resulta necesaria para el correcto funcionamiento de los
+    servicios municipales adscritos al departamento de ${escapeHTML(exp.departamento)}, no existiendo medios materiales ni personales
+    propios suficientes para su ejecución.</p>
+    <p><strong>Justificación de no alteración del objeto del contrato:</strong> se deja constancia de que el objeto no ha sido fraccionado
+    con la finalidad de eludir los requisitos de publicidad o el procedimiento de adjudicación aplicable. El acumulado de la familia
+    "${escapeHTML(exp.familia)}" en los últimos doce meses asciende a ${fmtEUR(frac.total)}, sobre un límite de ${fmtEUR(frac.limite)}.</p>
+    ${docTablaDatos(exp)}
+    <p><strong>Duración:</strong> ${exp.duracionMeses} meses, sin posibilidad de prórroga, comenzando el ${fmtDate(exp.fechaInicio)}.</p>
+    ${docFirma('El/la Jefe/a de Departamento', 'La Secretaría-Intervención')}
+  `;
+}
+
+function generarAprobacion(exp){
+  const fisc = calcularFiscal(exp);
+  return `
+    ${docCabecera('Resolución de aprobación del expediente y del gasto', exp)}
+    <p>Vista la memoria justificativa que antecede y examinada la documentación obrante en el expediente
+    <strong>${escapeHTML(exp.numero)}</strong>, y de conformidad con las competencias atribuidas en materia de contratación menor,</p>
+    <p><strong>RESUELVO</strong></p>
+    <p><strong>Primero.</strong> Aprobar el expediente de contrato menor de ${escapeHTML(etiquetaTipo(exp.tipo).toLowerCase())} cuyo objeto es
+    "${escapeHTML(exp.objeto)}", con cargo a la aplicación presupuestaria ${escapeHTML(exp.credito)}.</p>
+    <p><strong>Segundo.</strong> Aprobar el gasto correspondiente por un importe de base de ${fmtEUR(fisc.base)}, IVA (${fisc.ivaRate}%) de
+    ${fmtEUR(fisc.iva)}, lo que arroja un total de ${fmtEUR(fisc.totalConIva)}.</p>
+    <p><strong>Tercero.</strong> Proponer como adjudicatario/a a ${exp.adjudicatario ? escapeHTML(exp.adjudicatario.empresa) : '(pendiente de determinar)'}
+    ${exp.adjudicatario ? '(NIF ' + escapeHTML(exp.adjudicatario.nif) + ')' : ''}, por resultar su oferta la más ventajosa de entre las presentadas.</p>
+    <p><strong>Cuarto.</strong> Ordenar la incorporación de la presente resolución al expediente, así como su publicación y registro en
+    los términos que resulten legalmente exigibles.</p>
+    ${docTablaDatos(exp)}
+    ${docFirma(CONFIG.secretaria, 'Alcaldía-Presidencia')}
+  `;
+}
+
+function generarPropuestaAdjudicacion(exp){
+  const ofertas = (exp.ofertas || []).slice().sort((a,b)=>a.precio-b.precio);
+  const filas = ofertas.map(o => `<tr><td>${escapeHTML(o.empresa)}</td><td>${escapeHTML(o.nif)}</td><td class="num">${fmtEUR(o.precio)}</td></tr>`).join('');
+  return `
+    ${docCabecera('Propuesta de adjudicación', exp)}
+    <p>Examinadas las ofertas presentadas para la ejecución del contrato menor "${escapeHTML(exp.objeto)}", se relacionan a continuación
+    las propuestas económicas recibidas:</p>
+    <table>
+      <tr><th>Empresa</th><th>NIF</th><th class="tright">Precio ofertado</th></tr>
+      ${filas || '<tr><td colspan="3">No constan ofertas registradas en el expediente.</td></tr>'}
+    </table>
+    <p>A la vista de lo anterior, se propone la adjudicación a favor de
+    <strong>${exp.adjudicatario ? escapeHTML(exp.adjudicatario.empresa) : '(pendiente de determinar)'}</strong>
+    ${exp.adjudicatario ? ', con NIF ' + escapeHTML(exp.adjudicatario.nif) : ''}, por resultar la oferta económicamente más ventajosa
+    para los intereses municipales, sin perjuicio de la valoración cualitativa que, en su caso, proceda.</p>
+    <p><strong>Categoría fiscal del adjudicatario:</strong> ${exp.adjudicatario ? escapeHTML(categoriaFiscalLabel(exp.adjudicatario.categoriaFiscal)) : '—'}</p>
+    ${docFirma('Técnico/a proponente', 'Órgano de contratación')}
+  `;
+}
+
+function generarFormalizacion(exp){
+  const fisc = calcularFiscal(exp);
+  const esFacturaSimplificada = Number(exp.base) <= 5000 && exp.tipo !== 'obra';
+  const titulo = esFacturaSimplificada ? 'Factura-contrato simplificada' : 'Documento de formalización del contrato menor';
+  return `
+    ${docCabecera(titulo, exp)}
+    <p>De conformidad con lo dispuesto para los contratos menores, se formaliza el presente documento entre
+    ${escapeHTML(CONFIG.entidad)} y ${exp.adjudicatario ? escapeHTML(exp.adjudicatario.empresa) : '(adjudicatario pendiente)'}
+    ${exp.adjudicatario ? '(NIF ' + escapeHTML(exp.adjudicatario.nif) + ')' : ''}, con el siguiente contenido:</p>
+    <p><strong>Objeto:</strong> ${escapeHTML(exp.objeto)}.</p>
+    <p><strong>Precio:</strong> base de ${fmtEUR(fisc.base)}, IVA (${fisc.ivaRate}%) de ${fmtEUR(fisc.iva)}, total de
+    ${fmtEUR(fisc.totalConIva)}${fisc.retencion>0 ? `, con una retención a cuenta del IRPF de ${fmtEUR(fisc.retencion)} (neto a pagar de ${fmtEUR(fisc.neto)})` : ''}.</p>
+    <p><strong>Plazo de ejecución:</strong> ${exp.duracionMeses} meses, con inicio el ${fmtDate(exp.fechaInicio)}, sin admitir prórroga.</p>
+    <p>Ambas partes se someten al cumplimiento de lo pactado y a la normativa de contratación del sector público que resulte de aplicación.</p>
+    ${docFirma('Por el Ayuntamiento', 'Por el adjudicatario')}
+  `;
+}
+
+function generarChecklist(exp, all){
+  const issues = evaluarCumplimiento(exp, all);
+  const filas = issues.map(i => `<tr><td>${escapeHTML(i.categoria)}</td><td>${escapeHTML(i.nivel.toUpperCase())}</td><td>${escapeHTML(i.mensaje)}</td></tr>`).join('');
+  const bloqueantes = issues.filter(i=>i.nivel==='bloqueante').length;
+  return `
+    ${docCabecera('Checklist de cumplimiento y publicaciones', exp)}
+    <p>Resultado de la revisión normativa automática del expediente <strong>${escapeHTML(exp.numero)}</strong>:
+    ${bloqueantes>0 ? `<strong>${bloqueantes} incidencia(s) bloqueante(s) detectada(s)</strong>` : 'sin incidencias bloqueantes.'}</p>
+    <table>
+      <tr><th>Categoría</th><th>Nivel</th><th>Observación</th></tr>
+      ${filas || '<tr><td colspan="3">Sin incidencias.</td></tr>'}
+    </table>
+    <p><strong>Publicación en el Perfil del Contratante:</strong> ${exp.publicado ? 'realizada.' : 'pendiente de realizar.'}</p>
+    <p><strong>Inscripción en el Registro de Contratos:</strong> ${exp.registrado ? 'realizada.' : (Number(exp.base) > CONFIG.umbralRegistro ? 'pendiente de realizar.' : 'no exigible por razón de la cuantía.')}</p>
+    ${docFirma(CONFIG.secretaria, 'Fecha de revisión: ' + fmtDate(todayISO()))}
+  `;
+}
+
+const DOCUMENTOS = [
+  { id:'memoria', label:'Memoria justificativa', gen: generarMemoria },
+  { id:'aprobacion', label:'Aprobación de gasto', gen: generarAprobacion },
+  { id:'adjudicacion', label:'Propuesta de adjudicación', gen: generarPropuestaAdjudicacion },
+  { id:'formalizacion', label:'Formalización / factura-contrato', gen: generarFormalizacion },
+  { id:'checklist', label:'Checklist de cumplimiento', gen: (exp)=>generarChecklist(exp, App.state.expedientes) }
+];
+
+/* =========================================================================
+   PERSISTENCIA (localStorage)
+   ========================================================================= */
+/* Guarda expedientes y configuración en el navegador del usuario. Al ser
+   localStorage, los datos quedan ligados a este equipo/navegador y no se
+   comparten entre usuarios: para un uso multiusuario real, ver el apartado
+   de backend en la documentación adjunta (contratomenor-backend-esqueleto.js). */
+
+const STORAGE_KEY = 'contratomenor_app_v1';
+
+function storageDisponible(){
+  try{
+    const t = '__test__';
+    localStorage.setItem(t, '1');
+    localStorage.removeItem(t);
+    return true;
+  }catch(e){ return false; }
+}
+
+function guardarEstado(){
+  if(!storageDisponible()) return false;
+  try{
+    const payload = { version:1, guardadoEn: new Date().toISOString(), config: CONFIG, expedientes: App.state.expedientes };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+    return true;
+  }catch(e){
+    console.warn('No se pudo guardar el estado en localStorage:', e);
+    return false;
+  }
+}
+
+function cargarEstado(){
+  if(!storageDisponible()) return null;
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return null;
+    const data = JSON.parse(raw);
+    if(data && data.config) Object.assign(CONFIG, data.config);
+    return (data && Array.isArray(data.expedientes)) ? data.expedientes : null;
+  }catch(e){
+    console.warn('No se pudo leer el estado guardado:', e);
+    return null;
+  }
+}
+
+function borrarEstadoGuardado(){
+  if(storageDisponible()) localStorage.removeItem(STORAGE_KEY);
+}
+
+/* =========================================================================
+   ESTADO DE LA APLICACIÓN
+   ========================================================================= */
+
+const App = {
+  state: {
+    view: 'dashboard',
+    expedientes: cargarEstado() || JSON.parse(JSON.stringify(EXPEDIENTES_INICIALES)),
+    filtros: { texto:'', tipo:'', estado:'', familia:'' },
+    modal: { open:false, expedienteId:null, tab:'resumen', docTab:'memoria' },
+    wizard: null
+  },
+
+  init(){
+    // Si no había nada guardado todavía, deja constancia inicial en localStorage.
+    if(storageDisponible() && !localStorage.getItem(STORAGE_KEY)) guardarEstado();
+    this.render();
+  },
+
+  goTo(view){
+    this.state.view = view;
+    this.state.modal.open = false;
+    this.render();
+  },
+
+  toast(msg){
+    const wrap = document.getElementById('toastWrap');
+    const el = document.createElement('div');
+    el.className = 'toast';
+    el.textContent = msg;
+    wrap.appendChild(el);
+    setTimeout(()=>{ el.style.transition='opacity .3s ease'; el.style.opacity='0'; setTimeout(()=>el.remove(),320); }, 2600);
+  },
+
+  render(){
+    const root = document.getElementById('app');
+    root.innerHTML = renderSidebar(this.state) + renderMain(this.state);
+    if(this.state.modal.open){
+      root.insertAdjacentHTML('beforeend', renderModal(this.state));
+    }
+    window.scrollTo(0,0);
+  },
+
+  /* ---- navegación de expedientes / modal ---- */
+  openExpediente(id){
+    this.state.modal = { open:true, expedienteId:id, tab:'resumen', docTab:'memoria' };
+    this.render();
+  },
+  closeModal(){
+    this.state.modal.open = false;
+    this.render();
+  },
+  setModalTab(tab){
+    this.state.modal.tab = tab;
+    document.getElementById('modalBody').innerHTML = renderModalBody(this.state);
+  },
+  setDocTab(docId){
+    this.state.modal.docTab = docId;
+    document.getElementById('modalBody').innerHTML = renderModalBody(this.state);
+  },
+
+  /* ---- acciones sobre expedientes ---- */
+  marcarPublicado(id){
+    const exp = this.state.expedientes.find(e=>e.id===id);
+    if(!exp) return;
+    exp.publicado = true;
+    if(exp.estado==='aprobado') exp.estado = 'publicado';
+    guardarEstado();
+    this.toast(`Expediente ${exp.numero} publicado en el Perfil del Contratante.`);
+    this.render();
+    if(this.state.modal.open) this.openExpediente(id);
+  },
+  marcarRegistrado(id){
+    const exp = this.state.expedientes.find(e=>e.id===id);
+    if(!exp) return;
+    exp.registrado = true;
+    if(exp.estado==='publicado') exp.estado = 'registrado';
+    guardarEstado();
+    this.toast(`Expediente ${exp.numero} inscrito en el Registro de Contratos.`);
+    this.render();
+    if(this.state.modal.open) this.openExpediente(id);
+  },
+  cambiarEstado(id, estado){
+    const exp = this.state.expedientes.find(e=>e.id===id);
+    if(!exp) return;
+    exp.estado = estado;
+    guardarEstado();
+    this.toast(`Estado del expediente ${exp.numero} actualizado a "${etiquetaEstado(estado)}".`);
+    this.render();
+  },
+  eliminarExpediente(id){
+    const exp = this.state.expedientes.find(e=>e.id===id);
+    if(!exp) return;
+    if(!confirm(`¿Eliminar el expediente ${exp.numero}? Esta acción no se puede deshacer.`)) return;
+    this.state.expedientes = this.state.expedientes.filter(e=>e.id!==id);
+    this.state.modal.open = false;
+    guardarEstado();
+    this.toast(`Expediente ${exp.numero} eliminado.`);
+    this.render();
+  },
+
+  /* ---- filtros del listado ---- */
+  setFiltro(campo, valor){
+    this.state.filtros[campo] = valor;
+    const cont = document.getElementById('expedientesTableWrap');
+    if(cont) cont.innerHTML = renderExpedientesTabla(this.state);
+  },
+
+  /* ---- configuración ---- */
+  guardarConfigCampo(campo, valor){
+    if(['umbralObra','umbralServicio','umbralSuministro','duracionMaxMeses','ivaDefault','umbralRegistro'].includes(campo)){
+      CONFIG[campo] = Number(valor);
+    } else {
+      CONFIG[campo] = valor;
+    }
+    guardarEstado();
+    this.toast('Configuración guardada.');
+  },
+
+  /* ---- almacenamiento local: restablecer / exportar / importar ---- */
+  restablecerDatosEjemplo(){
+    if(!confirm('¿Restablecer los datos de ejemplo? Se perderán los expedientes creados y los cambios de configuración guardados en este navegador.')) return;
+    borrarEstadoGuardado();
+    Object.assign(CONFIG, {
+      entidad: "Ayuntamiento de Riofrío del Tajo", cif: "P-4512300-B",
+      sede: "Plaza Mayor, 1 — 45123 Riofrío del Tajo (Toledo)",
+      secretaria: "María Dolores Iglesias Cantón, Secretaria-Interventora",
+      umbralObra: 40000, umbralServicio: 15000, umbralSuministro: 15000,
+      duracionMaxMeses: 12, ivaDefault: 21, umbralRegistro: 5000, umbral347: 3005.06
+    });
+    this.state.expedientes = JSON.parse(JSON.stringify(EXPEDIENTES_INICIALES));
+    guardarEstado();
+    this.toast('Datos de ejemplo restablecidos.');
+    this.goTo('dashboard');
+  },
+  exportarCopiaSeguridad(){
+    const payload = { version:1, exportadoEn: new Date().toISOString(), config: CONFIG, expedientes: this.state.expedientes };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `contratomenor_copia_${todayISO()}.json`;
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+    this.toast('Copia de seguridad exportada.');
+  },
+  importarCopiaSeguridad(fileInput){
+    const file = fileInput.files && fileInput.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try{
+        const data = JSON.parse(ev.target.result);
+        if(!data || !Array.isArray(data.expedientes)) throw new Error('Formato no reconocido');
+        if(data.config) Object.assign(CONFIG, data.config);
+        this.state.expedientes = data.expedientes;
+        guardarEstado();
+        this.toast('Copia de seguridad importada correctamente.');
+        this.goTo('dashboard');
+      }catch(e){
+        this.toast('No se ha podido importar el archivo: formato no válido.');
+      }
+    };
+    reader.readAsText(file);
+    fileInput.value = '';
+  },
+
+  /* ---- wizard de nuevo expediente ---- */
+  iniciarWizard(){
+    this.state.wizard = {
+      step: 1,
+      data: {
+        departamento: DEPARTAMENTOS[0],
+        tipo: 'servicio',
+        familia: FAMILIAS[0],
+        credito: '',
+        objeto: '',
+        base: '',
+        ivaRate: CONFIG.ivaDefault,
+        duracionMeses: 3,
+        fechaInicio: todayISO(),
+        ofertas: [],
+        adjudicatarioEmpresa: '',
+        adjudicatarioNif: '',
+        categoriaFiscal: FISCAL_CATEGORIES[0].id
+      }
+    };
+    this.goTo('nuevo');
+  },
+  updateWizardField(campo, valor){
+    if(!this.state.wizard) return;
+    this.state.wizard.data[campo] = valor;
+  },
+  wizardNext(){
+    const w = this.state.wizard;
+    if(!w) return;
+    if(w.step===1){
+      if(!w.data.objeto || !w.data.credito || !w.data.base){
+        this.toast('Completa objeto, aplicación presupuestaria y base antes de continuar.');
+        return;
+      }
+    }
+    w.step = Math.min(5, w.step+1);
+    this.render();
+  },
+  wizardBack(){
+    const w = this.state.wizard;
+    if(!w) return;
+    w.step = Math.max(1, w.step-1);
+    this.render();
+  },
+  wizardGoStep(step){
+    if(!this.state.wizard) return;
+    this.state.wizard.step = step;
+    this.render();
+  },
+  wizardAddOferta(){
+    const w = this.state.wizard;
+    const empresa = document.getElementById('ofEmpresa').value.trim();
+    const nif = document.getElementById('ofNif').value.trim();
+    const precio = parseFloat(document.getElementById('ofPrecio').value);
+    if(!empresa || !nif || isNaN(precio)){
+      this.toast('Completa empresa, NIF y precio para añadir la oferta.');
+      return;
+    }
+    w.data.ofertas.push({ empresa, nif, precio });
+    document.getElementById('ofertasTableWrap').innerHTML = renderOfertasTabla(w.data.ofertas);
+    document.getElementById('ofEmpresa').value='';
+    document.getElementById('ofNif').value='';
+    document.getElementById('ofPrecio').value='';
+  },
+  wizardRemoveOferta(idx){
+    const w = this.state.wizard;
+    w.data.ofertas.splice(idx,1);
+    document.getElementById('ofertasTableWrap').innerHTML = renderOfertasTabla(w.data.ofertas);
+  },
+  wizardFinish(){
+    const w = this.state.wizard;
+    if(!w) return;
+    const d = w.data;
+    const nuevo = {
+      id: uid(),
+      numero: proximoNumeroExpediente(this.state.expedientes),
+      tipo: d.tipo,
+      familia: d.familia,
+      departamento: d.departamento,
+      objeto: d.objeto,
+      credito: d.credito,
+      base: Number(d.base) || 0,
+      ivaRate: Number(d.ivaRate),
+      duracionMeses: Number(d.duracionMeses) || 1,
+      fechaInicio: d.fechaInicio,
+      fechaCreacion: todayISO(),
+      estado: 'borrador',
+      ofertas: d.ofertas,
+      adjudicatario: d.adjudicatarioEmpresa ? {
+        empresa: d.adjudicatarioEmpresa, nif: d.adjudicatarioNif, categoriaFiscal: d.categoriaFiscal
+      } : null,
+      publicado:false, registrado:false, observaciones:''
+    };
+    this.state.expedientes.unshift(nuevo);
+    this.state.wizard = null;
+    guardarEstado();
+    this.toast(`Expediente ${nuevo.numero} creado correctamente.`);
+    this.goTo('expedientes');
+  }
+};
+
+function proximoNumeroExpediente(all){
+  const year = new Date().getFullYear();
+  const nums = all
+    .map(e => e.numero.match(/CM-(\d{4})-(\d+)/))
+    .filter(m => m && Number(m[1])===year)
+    .map(m => Number(m[2]));
+  const next = (nums.length ? Math.max(...nums) : 0) + 1;
+  return `CM-${year}-${String(next).padStart(3,'0')}`;
+}
+
+/* =========================================================================
+   RENDER — ESTRUCTURA GENERAL
+   ========================================================================= */
+
+const NAV_ITEMS = [
+  { id:'dashboard', label:'Panel general', ico:'◆' },
+  { id:'nuevo', label:'Nuevo expediente', ico:'+' },
+  { id:'expedientes', label:'Expedientes', ico:'≡' },
+  { id:'publicaciones', label:'Perfil del contratante', ico:'⬒' },
+  { id:'fiscalidad', label:'Fiscalidad y modelo 347', ico:'%' },
+  { id:'umbrales', label:'Umbrales y fraccionamiento', ico:'⚑' },
+  { id:'configuracion', label:'Configuración', ico:'⚙' }
+];
+
+function renderSidebar(state){
+  const items = NAV_ITEMS.map(it => {
+    const action = it.id==='nuevo' ? "App.iniciarWizard()" : `App.goTo('${it.id}')`;
+    return `
+    <button class="nav-item ${state.view===it.id?'active':''}" onclick="${action}">
+      <span class="ico">${it.ico}</span><span>${it.label}</span>
+    </button>`;
+  }).join('');
+
+  return `
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="mark">Contrato<em>Menor</em>.app</div>
+      <div class="sub">Gestión de contratación menor</div>
+    </div>
+    <div class="sidebar-entidad">
+      <strong>${escapeHTML(CONFIG.entidad)}</strong>
+      ${escapeHTML(CONFIG.cif)}<br>${escapeHTML(CONFIG.sede)}
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-label">Tramitación</div>
+      ${items}
+    </div>
+    <div class="sidebar-footer">Secretaría / Intervención<br>Ejercicio ${new Date().getFullYear()}</div>
+  </aside>`;
+}
+
+const VIEW_TITLES = {
+  dashboard: ['Panel general', 'Visión consolidada de la actividad contractual'],
+  nuevo: ['Nuevo expediente', 'Alta guiada de un contrato menor'],
+  expedientes: ['Expedientes', 'Listado completo de contratos menores tramitados'],
+  publicaciones: ['Perfil del contratante', 'Publicaciones y anotaciones registrales pendientes'],
+  fiscalidad: ['Fiscalidad y modelo 347', 'Retenciones, IVA y obligaciones informativas'],
+  umbrales: ['Umbrales y fraccionamiento', 'Control de acumulados por familia de gasto'],
+  configuracion: ['Configuración', 'Datos de la entidad y parámetros normativos']
+};
+
+function renderMain(state){
+  const [title, sub] = VIEW_TITLES[state.view] || ['ContratoMenor.app',''];
+  let body = '';
+  if(state.view==='dashboard') body = renderDashboard(state);
+  else if(state.view==='nuevo') body = renderWizard(state);
+  else if(state.view==='expedientes') body = renderExpedientesView(state);
+  else if(state.view==='publicaciones') body = renderPublicaciones(state);
+  else if(state.view==='fiscalidad') body = renderFiscalidad(state);
+  else if(state.view==='umbrales') body = renderUmbrales(state);
+  else if(state.view==='configuracion') body = renderConfiguracion(state);
+
+  return `
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">${title}</div>
+        <div class="topbar-sub">${sub}</div>
+      </div>
+      <div class="topbar-right">
+        <button class="btn gold small no-print" onclick="App.iniciarWizard()">Nuevo expediente</button>
+        <div class="badge-user">
+          <div class="avatar">SI</div>
+          <div class="who">${escapeHTML(CONFIG.secretaria.split(',')[0])}<small>Secretaría-Intervención</small></div>
+        </div>
+      </div>
+    </div>
+    <div class="content">${body}</div>
+  </div>`;
+}
+
+/* =========================================================================
+   RENDER — DASHBOARD
+   ========================================================================= */
+
+function renderDashboard(state){
+  const all = state.expedientes;
+  const totalImporte = all.reduce((s,e)=> s + calcularFiscal(e).totalConIva, 0);
+  const pendientesPublicar = all.filter(e => !e.publicado && (e.estado==='aprobado' || e.estado==='publicado' || e.estado==='registrado' || Number(e.base) > 0)).filter(e=>e.estado!=='borrador' && !e.publicado);
+  const alertas = all.reduce((s,e)=> s + evaluarCumplimiento(e, all).filter(i=>i.nivel==='bloqueante').length, 0);
+  const avisos = all.reduce((s,e)=> s + evaluarCumplimiento(e, all).filter(i=>i.nivel==='aviso').length, 0);
+
+  const recientes = all.slice().sort((a,b)=> new Date(b.fechaCreacion) - new Date(a.fechaCreacion)).slice(0,6);
+
+  const filasRecientes = recientes.map(e => {
+    const fisc = calcularFiscal(e);
+    return `
+    <tr onclick="App.openExpediente('${e.id}')" style="cursor:pointer;">
+      <td><strong>${escapeHTML(e.numero)}</strong><div style="color:var(--ink-soft); font-size:11.5px;">${escapeHTML(e.familia)}</div></td>
+      <td>${escapeHTML(etiquetaTipo(e.tipo))}</td>
+      <td>${escapeHTML(e.departamento)}</td>
+      <td class="num">${fmtEUR(fisc.totalConIva)}</td>
+      <td><span class="chip ${e.estado}">${etiquetaEstado(e.estado)}</span></td>
+    </tr>`;
+  }).join('');
+
+  const familiasResumen = FAMILIAS.map(fam => {
+    const deTipo = all.filter(e=>e.familia===fam);
+    if(deTipo.length===0) return null;
+    const tipo = deTipo[0].tipo;
+    const limite = limiteFor(tipo);
+    const ref = deTipo.slice().sort((a,b)=> new Date(b.fechaInicio)-new Date(a.fechaInicio))[0];
+    const frac = familiaAcumulada(ref, all);
+    const pct = Math.min(100, Math.round(frac.ratio*100));
+    const cls = frac.ratio>=1 ? 'bad' : (frac.ratio>=0.85 ? 'warn' : '');
+    return `
+      <div style="margin-bottom:14px;">
+        <div style="display:flex; justify-content:space-between; font-size:12.5px; margin-bottom:5px;">
+          <span>${escapeHTML(fam)}</span>
+          <span class="num" style="color:var(--ink-soft);">${fmtEUR(frac.total)} / ${fmtEUR(frac.limite)}</span>
+        </div>
+        <div class="progress ${cls}"><div style="width:${pct}%;"></div></div>
+      </div>`;
+  }).filter(Boolean).join('');
+
+  const cumplimientoPendiente = all.filter(e => {
+    const req = Number(e.base) > CONFIG.umbralRegistro;
+    return (!e.publicado && e.estado!=='borrador') || (req && !e.registrado);
+  });
+  const cumplimientoFilas = cumplimientoPendiente.length ? cumplimientoPendiente.map(e => `
+    <li>
+      <span>${escapeHTML(e.numero)} — ${escapeHTML(e.objeto.slice(0,42))}${e.objeto.length>42?'…':''}</span>
+      <span>
+        ${!e.publicado && e.estado!=='borrador' ? '<span class="chip aviso">Falta publicar</span>' : ''}
+        ${(Number(e.base) > CONFIG.umbralRegistro && !e.registrado) ? '<span class="chip aviso">Falta registrar</span>' : ''}
+      </span>
+    </li>`).join('') : '<li><span style="color:var(--ink-soft);">No hay pendientes de publicación o registro.</span></li>';
+
+  return `
+    <div class="grid-kpi">
+      <div class="kpi">
+        <div class="label">Expedientes totales</div>
+        <div class="value">${all.length}</div>
+        <div class="foot">Ejercicio ${new Date().getFullYear()}</div>
+      </div>
+      <div class="kpi ok">
+        <div class="label">Importe total tramitado</div>
+        <div class="value" style="font-size:20px;">${fmtEUR(totalImporte)}</div>
+        <div class="foot">IVA incluido, todos los expedientes</div>
+      </div>
+      <div class="kpi ${avisos>0?'':''}">
+        <div class="label">Pendientes de publicar</div>
+        <div class="value">${all.filter(e=> !e.publicado && e.estado!=='borrador').length}</div>
+        <div class="foot">En el Perfil del Contratante</div>
+      </div>
+      <div class="kpi ${alertas>0?'alert':'ok'}">
+        <div class="label">Alertas bloqueantes</div>
+        <div class="value">${alertas}</div>
+        <div class="foot">${avisos} avisos adicionales</div>
+      </div>
+    </div>
+
+    <div class="row2" style="align-items:start; margin-bottom:20px;">
+      <div class="panel">
+        <div class="panel-head">
+          <div><h3>Expedientes recientes</h3><div class="hint">Últimos movimientos del ejercicio</div></div>
+          <button class="btn secondary small" onclick="App.goTo('expedientes')">Ver todos</button>
+        </div>
+        <div class="panel-body" style="padding:0;">
+          <table>
+            <thead><tr><th>Expediente</th><th>Tipo</th><th>Departamento</th><th class="tright">Importe</th><th>Estado</th></tr></thead>
+            <tbody>${filasRecientes}</tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <div><h3>Cumplimiento pendiente</h3><div class="hint">Publicación y registro</div></div>
+        </div>
+        <div class="panel-body">
+          <ul class="mini-list">${cumplimientoFilas}</ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div><h3>Alertas de umbral por familia homogénea</h3><div class="hint">Acumulado de los últimos 12 meses frente al límite legal del tipo de contrato</div></div>
+        <button class="btn secondary small" onclick="App.goTo('umbrales')">Ver detalle</button>
+      </div>
+      <div class="panel-body">${familiasResumen}</div>
+    </div>
+  `;
+}
+
+/* =========================================================================
+   RENDER — EXPEDIENTES (LISTADO)
+   ========================================================================= */
+
+function renderExpedientesView(state){
+  return `
+    <div class="filters-bar">
+      <input class="search-input" id="filtroTexto" placeholder="Buscar por número u objeto…" value="${escapeHTML(state.filtros.texto)}"
+        oninput="App.setFiltro('texto', this.value)">
+      <select onchange="App.setFiltro('tipo', this.value)">
+        <option value="">Todos los tipos</option>
+        ${TIPOS.map(t=>`<option value="${t.id}" ${state.filtros.tipo===t.id?'selected':''}>${t.label}</option>`).join('')}
+      </select>
+      <select onchange="App.setFiltro('estado', this.value)">
+        <option value="">Todos los estados</option>
+        ${ESTADOS.map(e=>`<option value="${e.id}" ${state.filtros.estado===e.id?'selected':''}>${e.label}</option>`).join('')}
+      </select>
+      <select onchange="App.setFiltro('familia', this.value)">
+        <option value="">Todas las familias</option>
+        ${FAMILIAS.map(f=>`<option value="${escapeHTML(f)}" ${state.filtros.familia===f?'selected':''}>${escapeHTML(f)}</option>`).join('')}
+      </select>
+    </div>
+    <div class="panel">
+      <div class="panel-body" style="padding:0;" id="expedientesTableWrap">
+        ${renderExpedientesTabla(state)}
+      </div>
+    </div>
+  `;
+}
+
+function renderExpedientesTabla(state){
+  const f = state.filtros;
+  let rows = state.expedientes.slice().sort((a,b)=> new Date(b.fechaCreacion)-new Date(a.fechaCreacion));
+  if(f.texto) rows = rows.filter(e => (e.numero+' '+e.objeto).toLowerCase().includes(f.texto.toLowerCase()));
+  if(f.tipo) rows = rows.filter(e => e.tipo===f.tipo);
+  if(f.estado) rows = rows.filter(e => e.estado===f.estado);
+  if(f.familia) rows = rows.filter(e => e.familia===f.familia);
+
+  if(rows.length===0){
+    return `<div class="empty-state"><div class="big">Sin resultados</div>No hay expedientes que coincidan con los filtros aplicados.</div>`;
+  }
+
+  const filas = rows.map(e => {
+    const fisc = calcularFiscal(e);
+    const bloq = tieneBloqueantes(e, state.expedientes);
+    return `
+    <tr>
+      <td onclick="App.openExpediente('${e.id}')" style="cursor:pointer;">
+        <strong>${escapeHTML(e.numero)}</strong>
+        <div style="color:var(--ink-soft); font-size:11.5px; max-width:280px;">${escapeHTML(e.objeto.slice(0,58))}${e.objeto.length>58?'…':''}</div>
+      </td>
+      <td>${escapeHTML(etiquetaTipo(e.tipo))}</td>
+      <td>${escapeHTML(e.familia)}</td>
+      <td>${escapeHTML(e.departamento)}</td>
+      <td class="num">${fmtEUR(fisc.totalConIva)}</td>
+      <td><span class="chip ${e.estado}">${etiquetaEstado(e.estado)}</span></td>
+      <td>${bloq ? '<span class="chip bloqueante">Bloqueante</span>' : '<span class="chip ok">Conforme</span>'}</td>
+      <td class="no-print"><button class="btn secondary small" onclick="App.openExpediente('${e.id}')">Abrir</button></td>
+    </tr>`;
+  }).join('');
+
+  return `
+    <table>
+      <thead><tr><th>Expediente</th><th>Tipo</th><th>Familia</th><th>Departamento</th><th class="tright">Importe</th><th>Estado</th><th>Cumplimiento</th><th></th></tr></thead>
+      <tbody>${filas}</tbody>
+    </table>`;
+}
+
+/* =========================================================================
+   RENDER — MODAL DE DETALLE DE EXPEDIENTE
+   ========================================================================= */
+
+function renderModal(state){
+  const exp = state.expedientes.find(e=>e.id===state.modal.expedienteId);
+  if(!exp) return '';
+  const tabs = [
+    { id:'resumen', label:'Resumen' },
+    { id:'ofertas', label:'Ofertas' },
+    { id:'fiscalidad', label:'Fiscalidad' },
+    { id:'cumplimiento', label:'Cumplimiento' },
+    { id:'documentos', label:'Documentos' }
+  ];
+  return `
+  <div class="modal-overlay" onmousedown="if(event.target===this) App.closeModal()">
+    <div class="modal-box">
+      <div class="modal-head">
+        <div>
+          <h2>${escapeHTML(exp.numero)}</h2>
+          <div class="meta">${escapeHTML(etiquetaTipo(exp.tipo))} · ${escapeHTML(exp.familia)} · ${escapeHTML(exp.departamento)}</div>
+        </div>
+        <button class="modal-close no-print" onclick="App.closeModal()">✕</button>
+      </div>
+      <div class="tabs no-print">
+        ${tabs.map(t=>`<button class="tab-btn ${state.modal.tab===t.id?'active':''}" onclick="App.setModalTab('${t.id}')">${t.label}</button>`).join('')}
+      </div>
+      <div class="modal-body" id="modalBody">${renderModalBody(state)}</div>
+      <div class="modal-foot no-print">
+        <div>
+          <select onchange="App.cambiarEstado('${exp.id}','' + this.value)" style="padding:8px 11px; border:1px solid var(--line-strong); border-radius:4px; font-size:12.5px;">
+            ${ESTADOS.map(s=>`<option value="${s.id}" ${exp.estado===s.id?'selected':''}>${s.label}</option>`).join('')}
+          </select>
+        </div>
+        <div style="display:flex; gap:8px;">
+          ${!exp.publicado ? `<button class="btn secondary small" onclick="App.marcarPublicado('${exp.id}')">Marcar publicado</button>` : ''}
+          ${!exp.registrado ? `<button class="btn secondary small" onclick="App.marcarRegistrado('${exp.id}')">Marcar registrado</button>` : ''}
+          <button class="btn danger small" onclick="App.eliminarExpediente('${exp.id}')">Eliminar</button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderModalBody(state){
+  const exp = state.expedientes.find(e=>e.id===state.modal.expedienteId);
+  if(!exp) return '';
+  const tab = state.modal.tab;
+  if(tab==='resumen') return renderTabResumen(exp, state.expedientes);
+  if(tab==='ofertas') return renderTabOfertas(exp);
+  if(tab==='fiscalidad') return renderTabFiscalidad(exp);
+  if(tab==='cumplimiento') return renderTabCumplimiento(exp, state.expedientes);
+  if(tab==='documentos') return renderTabDocumentos(exp, state);
+  return '';
+}
+
+function renderTabResumen(exp, all){
+  const fisc = calcularFiscal(exp);
+  const bloqueantes = evaluarCumplimiento(exp, all).filter(i=>i.nivel==='bloqueante').length;
+  return `
+    <div class="row2">
+      <div>
+        <div class="field"><label>Objeto del contrato</label><div>${escapeHTML(exp.objeto)}</div></div>
+        <div class="row2">
+          <div class="field"><label>Aplicación presupuestaria</label><div>${escapeHTML(exp.credito)}</div></div>
+          <div class="field"><label>Duración</label><div>${exp.duracionMeses} meses</div></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label>Fecha de inicio</label><div>${fmtDate(exp.fechaInicio)}</div></div>
+          <div class="field"><label>Fecha de creación del expediente</label><div>${fmtDate(exp.fechaCreacion)}</div></div>
+        </div>
+        <div class="field"><label>Observaciones</label><div style="color:var(--ink-soft);">${escapeHTML(exp.observaciones)||'—'}</div></div>
+      </div>
+      <div>
+        <div class="panel" style="margin-bottom:14px;">
+          <div class="panel-body">
+            <div class="mini-list">
+              <li><span>Base imponible</span><span class="num">${fmtEUR(fisc.base)}</span></li>
+              <li><span>IVA (${fisc.ivaRate}%)</span><span class="num">${fmtEUR(fisc.iva)}</span></li>
+              <li><span>Total con IVA</span><span class="num"><strong>${fmtEUR(fisc.totalConIva)}</strong></span></li>
+              <li><span>Retención IRPF</span><span class="num">${fmtEUR(fisc.retencion)}</span></li>
+              <li><span>Neto a pagar</span><span class="num"><strong>${fmtEUR(fisc.neto)}</strong></span></li>
+            </div>
+          </div>
+        </div>
+        <div class="field"><label>Estado</label><span class="chip ${exp.estado}">${etiquetaEstado(exp.estado)}</span></div>
+        <div class="field"><label>Cumplimiento</label>
+          ${bloqueantes>0 ? `<span class="chip bloqueante">${bloqueantes} incidencia(s) bloqueante(s)</span>` : `<span class="chip ok">Sin bloqueos</span>`}
+        </div>
+        <div class="field"><label>Publicación / Registro</label>
+          <span class="chip ${exp.publicado?'ok':'aviso'}">${exp.publicado?'Publicado':'Sin publicar'}</span>
+          <span class="chip ${exp.registrado?'ok':'aviso'}">${exp.registrado?'Registrado':'Sin registrar'}</span>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderTabOfertas(exp){
+  const filas = (exp.ofertas||[]).map(o => `
+    <tr><td>${escapeHTML(o.empresa)}</td><td>${escapeHTML(o.nif)}</td><td class="num">${fmtEUR(o.precio)}</td></tr>`).join('');
+  return `
+    <table>
+      <thead><tr><th>Empresa</th><th>NIF</th><th class="tright">Precio ofertado</th></tr></thead>
+      <tbody>${filas || '<tr><td colspan="3" style="color:var(--ink-soft);">No se han registrado ofertas.</td></tr>'}</tbody>
+    </table>
+    <div class="field" style="margin-top:16px;">
+      <label>Adjudicatario propuesto</label>
+      <div>${exp.adjudicatario ? escapeHTML(exp.adjudicatario.empresa) + ' — NIF ' + escapeHTML(exp.adjudicatario.nif) : 'Pendiente de determinar'}</div>
+    </div>`;
+}
+
+function renderTabFiscalidad(exp){
+  const fisc = calcularFiscal(exp);
+  return `
+    <div class="row2">
+      <div>
+        <div class="field"><label>Categoría fiscal del adjudicatario</label>
+          <div>${exp.adjudicatario ? escapeHTML(categoriaFiscalLabel(exp.adjudicatario.categoriaFiscal)) : '—'}</div>
+        </div>
+        <div class="field"><label>Tipo de IVA aplicado</label><div>${fisc.ivaRate}%</div></div>
+        <div class="field"><label>Porcentaje de retención IRPF</label><div>${fisc.retRate}%</div></div>
+      </div>
+      <div class="panel">
+        <div class="panel-body">
+          <div class="mini-list">
+            <li><span>Base imponible</span><span class="num">${fmtEUR(fisc.base)}</span></li>
+            <li><span>Cuota de IVA</span><span class="num">${fmtEUR(fisc.iva)}</span></li>
+            <li><span>Total con IVA</span><span class="num">${fmtEUR(fisc.totalConIva)}</span></li>
+            <li><span>Retención IRPF</span><span class="num">− ${fmtEUR(fisc.retencion)}</span></li>
+            <li><span><strong>Neto a pagar</strong></span><span class="num"><strong>${fmtEUR(fisc.neto)}</strong></span></li>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderTabCumplimiento(exp, all){
+  const issues = evaluarCumplimiento(exp, all);
+  if(issues.length===0){
+    return `<div class="empty-state"><div class="big">Sin incidencias</div>El expediente no presenta observaciones normativas.</div>`;
+  }
+  return issues.map(i => `
+    <div class="checklist-item ${i.nivel}">
+      <div class="dot"></div>
+      <div class="txt"><small>${escapeHTML(i.categoria)} · ${i.nivel}</small>${escapeHTML(i.mensaje)}</div>
+    </div>`).join('');
+}
+
+function renderTabDocumentos(exp, state){
+  const activo = DOCUMENTOS.find(d=>d.id===state.modal.docTab) || DOCUMENTOS[0];
+  const tabsBtns = DOCUMENTOS.map(d => `
+    <button class="btn ${activo.id===d.id?'':'secondary'} small" style="margin:0 6px 8px 0;" onclick="App.setDocTab('${d.id}')">${d.label}</button>`).join('');
+  return `
+    <div class="no-print" style="margin-bottom:14px;">${tabsBtns}
+      <button class="btn gold small" id="btnExportarPDF" style="margin-left:6px;" onclick="exportarDocumentoPDF('${exp.id}','${activo.id}', this)">Exportar PDF</button>
+      <button class="btn secondary small" onclick="descargarDocumentoActivo('${exp.id}','${activo.id}')">Descargar (.txt)</button>
+      <button class="btn secondary small" onclick="window.print()">Imprimir</button>
+    </div>
+    <div class="doc-sheet" id="docSheetContent">${activo.gen(exp)}</div>
+  `;
+}
+
+function descargarDocumentoActivo(expId, docId){
+  const exp = App.state.expedientes.find(e=>e.id===expId);
+  const doc = DOCUMENTOS.find(d=>d.id===docId);
+  if(!exp || !doc) return;
+  const el = document.getElementById('docSheetContent');
+  const texto = el ? el.innerText : '';
+  const blob = new Blob([texto], {type:'text/plain;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${exp.numero}_${doc.id}.txt`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+  App.toast('Documento descargado como texto plano.');
+}
+
+/* Exportación a PDF real: renderiza la hoja tal como se ve en pantalla
+   (html2canvas) y la incrusta en un documento PDF paginado (jsPDF),
+   respetando la tipografía y el estilo editorial del documento.
+   Recibe el id del contenedor .doc-sheet y el nombre de archivo deseado,
+   para poder usarse tanto en el modal de expediente como en el asistente. */
+function exportarPDFDesdeElemento(elId, filename, btnEl){
+  const el = document.getElementById(elId);
+  if(!el) return;
+
+  if(typeof html2canvas === 'undefined' || typeof window.jspdf === 'undefined'){
+    App.toast('No se pudo cargar el generador de PDF (sin conexión a internet). Usa "Imprimir" como alternativa.');
+    return;
+  }
+
+  const textoOriginal = btnEl ? btnEl.textContent : '';
+  if(btnEl){ btnEl.textContent = 'Generando…'; btnEl.disabled = true; }
+
+  html2canvas(el, { scale: 2, backgroundColor: '#ffffff', useCORS: true }).then(canvas => {
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ unit:'mm', format:'a4', orientation:'portrait' });
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const margin = 12;
+    const usableWidth = pageWidth - margin*2;
+    const imgHeight = (canvas.height * usableWidth) / canvas.width;
+    const imgData = canvas.toDataURL('image/png');
+
+    let heightLeft = imgHeight;
+    let position = margin;
+    pdf.addImage(imgData, 'PNG', margin, position, usableWidth, imgHeight);
+    heightLeft -= (pageHeight - margin*2);
+
+    while(heightLeft > 0){
+      pdf.addPage();
+      position = margin - (imgHeight - heightLeft);
+      pdf.addImage(imgData, 'PNG', margin, position, usableWidth, imgHeight);
+      heightLeft -= (pageHeight - margin*2);
+    }
+
+    pdf.save(filename);
+    App.toast('Documento exportado a PDF.');
+  }).catch(err => {
+    console.error(err);
+    App.toast('Ha ocurrido un error generando el PDF.');
+  }).finally(() => {
+    if(btnEl){ btnEl.textContent = textoOriginal; btnEl.disabled = false; }
+  });
+}
+
+function exportarDocumentoPDF(expId, docId, btnEl){
+  const exp = App.state.expedientes.find(e=>e.id===expId);
+  const doc = DOCUMENTOS.find(d=>d.id===docId);
+  if(!exp || !doc) return;
+  exportarPDFDesdeElemento('docSheetContent', `${exp.numero}_${doc.id}.pdf`, btnEl);
+}
+
+
+
+/* =========================================================================
+   RENDER — WIZARD DE NUEVO EXPEDIENTE
+   ========================================================================= */
+
+const WIZARD_STEPS = [
+  'Datos básicos',
+  'Ofertas recibidas',
+  'Fiscalidad y adjudicatario',
+  'Revisión de cumplimiento',
+  'Publicación / documentos'
+];
+
+function renderStepsBar(current){
+  return `<div class="steps-bar">${WIZARD_STEPS.map((label, i) => {
+    const n = i+1;
+    const cls = n<current ? 'done' : (n===current ? 'active' : '');
+    const connector = i < WIZARD_STEPS.length-1 ? '<div class="step-connector"></div>' : '';
+    return `<div class="step-node ${cls}" style="cursor:${n<current?'pointer':'default'};" ${n<current?`onclick="App.wizardGoStep(${n})"`:''}>
+      <div class="circle">${n<current?'✓':n}</div><div class="label">${label}</div></div>${connector}`;
+  }).join('')}</div>`;
+}
+
+function renderWizard(state){
+  const w = state.wizard;
+  if(!w){
+    return `<div class="empty-state"><div class="big">Asistente no iniciado</div>
+      <button class="btn gold" style="margin-top:10px;" onclick="App.iniciarWizard()">Iniciar nuevo expediente</button></div>`;
+  }
+  const d = w.data;
+  let stepBody = '';
+
+  if(w.step===1){
+    stepBody = `
+      <div class="row2">
+        <div class="field"><label>Departamento</label>
+          <select onchange="App.updateWizardField('departamento', this.value)">
+            ${DEPARTAMENTOS.map(dep=>`<option ${d.departamento===dep?'selected':''}>${dep}</option>`).join('')}
+          </select>
+        </div>
+        <div class="field"><label>Tipo de contrato</label>
+          <select onchange="App.updateWizardField('tipo', this.value)">
+            ${TIPOS.map(t=>`<option value="${t.id}" ${d.tipo===t.id?'selected':''}>${t.label}</option>`).join('')}
+          </select>
+          <div class="desc">Límite legal (base, sin IVA): ${fmtEUR(limiteFor(d.tipo))}</div>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Familia homogénea de gasto</label>
+          <select onchange="App.updateWizardField('familia', this.value)">
+            ${FAMILIAS.map(f=>`<option ${d.familia===f?'selected':''}>${f}</option>`).join('')}
+          </select>
+        </div>
+        <div class="field"><label>Aplicación presupuestaria</label>
+          <input type="text" placeholder="p. ej. 920.22100" value="${escapeHTML(d.credito)}" onchange="App.updateWizardField('credito', this.value)">
+        </div>
+      </div>
+      <div class="field"><label>Objeto del contrato</label>
+        <textarea placeholder="Describe con precisión el alcance de la prestación…" onchange="App.updateWizardField('objeto', this.value)">${escapeHTML(d.objeto)}</textarea>
+        <div class="desc">Evita descripciones genéricas como "varios" o "servicios generales": pueden indicar riesgo de fraccionamiento.</div>
+      </div>
+      <div class="row3">
+        <div class="field"><label>Base imponible (€, sin IVA)</label>
+          <input type="number" min="0" step="0.01" value="${d.base}" onchange="App.updateWizardField('base', this.value)">
+        </div>
+        <div class="field"><label>Duración (meses)</label>
+          <input type="number" min="1" value="${d.duracionMeses}" onchange="App.updateWizardField('duracionMeses', this.value)">
+        </div>
+        <div class="field"><label>Fecha de inicio</label>
+          <input type="date" value="${d.fechaInicio}" onchange="App.updateWizardField('fechaInicio', this.value)">
+        </div>
+      </div>`;
+  }
+
+  else if(w.step===2){
+    stepBody = `
+      <p style="color:var(--ink-soft); font-size:13px; margin-top:0;">Registra las ofertas recibidas para acreditar la concurrencia o la justificación de precio de mercado. Se recomienda un mínimo de tres presupuestos comparables.</p>
+      <div class="offer-row">
+        <div class="field" style="margin-bottom:0;"><label>Empresa</label><input type="text" id="ofEmpresa" placeholder="Razón social"></div>
+        <div class="field" style="margin-bottom:0;"><label>NIF</label><input type="text" id="ofNif" placeholder="B12345678"></div>
+        <div class="field" style="margin-bottom:0;"><label>Precio (€)</label><input type="number" id="ofPrecio" placeholder="0,00"></div>
+        <button class="btn secondary" onclick="App.wizardAddOferta()">Añadir</button>
+      </div>
+      <div id="ofertasTableWrap" style="margin-top:12px;">${renderOfertasTabla(d.ofertas)}</div>`;
+  }
+
+  else if(w.step===3){
+    const fisc = calcularFiscal({ base:d.base, ivaRate:d.ivaRate, adjudicatario:{ categoriaFiscal:d.categoriaFiscal } });
+    stepBody = `
+      <div class="row2">
+        <div class="field"><label>Empresa adjudicataria propuesta</label>
+          <input type="text" value="${escapeHTML(d.adjudicatarioEmpresa)}" placeholder="Razón social o nombre" onchange="App.updateWizardField('adjudicatarioEmpresa', this.value)">
+        </div>
+        <div class="field"><label>NIF</label>
+          <input type="text" value="${escapeHTML(d.adjudicatarioNif)}" placeholder="B12345678" onchange="App.updateWizardField('adjudicatarioNif', this.value)">
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Categoría fiscal</label>
+          <select onchange="App.updateWizardField('categoriaFiscal', this.value); App.render();">
+            ${FISCAL_CATEGORIES.map(c=>`<option value="${c.id}" ${d.categoriaFiscal===c.id?'selected':''}>${c.label} (retención ${c.retencion}%)</option>`).join('')}
+          </select>
+        </div>
+        <div class="field"><label>Tipo de IVA</label>
+          <select onchange="App.updateWizardField('ivaRate', this.value); App.render();">
+            ${IVA_OPCIONES.map(v=>`<option value="${v}" ${Number(d.ivaRate)===v?'selected':''}>${v}%</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <div class="panel" style="margin-top:8px;">
+        <div class="panel-body">
+          <div class="mini-list">
+            <li><span>Base imponible</span><span class="num">${fmtEUR(fisc.base)}</span></li>
+            <li><span>IVA (${fisc.ivaRate}%)</span><span class="num">${fmtEUR(fisc.iva)}</span></li>
+            <li><span>Total con IVA</span><span class="num"><strong>${fmtEUR(fisc.totalConIva)}</strong></span></li>
+            <li><span>Retención IRPF (${fisc.retRate}%)</span><span class="num">− ${fmtEUR(fisc.retencion)}</span></li>
+            <li><span><strong>Neto a pagar</strong></span><span class="num"><strong>${fmtEUR(fisc.neto)}</strong></span></li>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  else if(w.step===4){
+    const expTemp = wizardDataToExpediente(d, state.expedientes);
+    const otros = state.expedientes;
+    const issues = evaluarCumplimiento(expTemp, otros);
+    stepBody = issues.length===0
+      ? `<div class="empty-state"><div class="big">Sin incidencias detectadas</div>El expediente puede continuar su tramitación.</div>`
+      : issues.map(i=>`
+        <div class="checklist-item ${i.nivel}">
+          <div class="dot"></div>
+          <div class="txt"><small>${escapeHTML(i.categoria)} · ${i.nivel}</small>${escapeHTML(i.mensaje)}</div>
+        </div>`).join('');
+  }
+
+  else if(w.step===5){
+    const expTemp = wizardDataToExpediente(d, state.expedientes);
+    if(!w.docTab) w.docTab = 'memoria';
+    const activo = DOCUMENTOS.find(x=>x.id===w.docTab) || DOCUMENTOS[0];
+    stepBody = `
+      <p style="color:var(--ink-soft); font-size:13px; margin-top:0;">Revisa la documentación generada automáticamente a partir de los datos introducidos antes de guardar el expediente.</p>
+      <div style="margin-bottom:14px;">
+        ${DOCUMENTOS.map(dc => `<button class="btn ${activo.id===dc.id?'':'secondary'} small" style="margin:0 6px 8px 0;" onclick="App.state.wizard.docTab='${dc.id}'; App.render();">${dc.label}</button>`).join('')}
+        <button class="btn gold small" style="margin-left:6px;" onclick="exportarPDFDesdeElemento('docSheetContentWizard','borrador_${activo.id}.pdf', this)">Exportar PDF</button>
+      </div>
+      <div class="doc-sheet" id="docSheetContentWizard">${activo.gen(expTemp)}</div>
+    `;
+  }
+
+  const esUltimo = w.step === WIZARD_STEPS.length;
+
+  return `
+    <div class="panel">
+      <div class="panel-body">
+        ${renderStepsBar(w.step)}
+        ${stepBody}
+        <div class="wizard-actions">
+          <button class="btn secondary" onclick="${w.step===1?"App.goTo('dashboard')":"App.wizardBack()"}">${w.step===1?'Cancelar':'Atrás'}</button>
+          ${esUltimo
+            ? `<button class="btn gold" onclick="App.wizardFinish()">Guardar expediente</button>`
+            : `<button class="btn" onclick="App.wizardNext()">Continuar</button>`}
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderOfertasTabla(ofertas){
+  if(!ofertas || ofertas.length===0){
+    return `<div style="color:var(--ink-soft); font-size:12.5px; padding:10px 0;">Todavía no se han añadido ofertas.</div>`;
+  }
+  const filas = ofertas.map((o,idx) => `
+    <tr>
+      <td>${escapeHTML(o.empresa)}</td><td>${escapeHTML(o.nif)}</td><td class="num">${fmtEUR(o.precio)}</td>
+      <td><button class="btn danger small" onclick="App.wizardRemoveOferta(${idx})">Quitar</button></td>
+    </tr>`).join('');
+  return `<table><thead><tr><th>Empresa</th><th>NIF</th><th class="tright">Precio</th><th></th></tr></thead><tbody>${filas}</tbody></table>`;
+}
+
+function wizardDataToExpediente(d, existentes){
+  return {
+    id:'temp', numero: proximoNumeroExpediente(existentes),
+    tipo:d.tipo, familia:d.familia, departamento:d.departamento, objeto:d.objeto,
+    credito:d.credito, base:Number(d.base)||0, ivaRate:Number(d.ivaRate),
+    duracionMeses:Number(d.duracionMeses)||1, fechaInicio:d.fechaInicio, fechaCreacion:todayISO(),
+    estado:'borrador', ofertas:d.ofertas,
+    adjudicatario: d.adjudicatarioEmpresa ? { empresa:d.adjudicatarioEmpresa, nif:d.adjudicatarioNif, categoriaFiscal:d.categoriaFiscal } : null,
+    publicado:false, registrado:false, observaciones:''
+  };
+}
+
+/* =========================================================================
+   RENDER — PERFIL DEL CONTRATANTE / PUBLICACIONES
+   ========================================================================= */
+
+function renderPublicaciones(state){
+  const all = state.expedientes;
+  const pendPublicar = all.filter(e => e.estado!=='borrador' && !e.publicado);
+  const pendRegistrar = all.filter(e => Number(e.base) > CONFIG.umbralRegistro && !e.registrado);
+  const publicados = all.filter(e => e.publicado);
+
+  const filaPend = (list, accion, label) => list.length ? list.map(e => `
+    <tr>
+      <td><strong>${escapeHTML(e.numero)}</strong></td>
+      <td>${escapeHTML(e.objeto.slice(0,60))}${e.objeto.length>60?'…':''}</td>
+      <td class="num">${fmtEUR(calcularFiscal(e).totalConIva)}</td>
+      <td><span class="chip ${e.estado}">${etiquetaEstado(e.estado)}</span></td>
+      <td class="no-print"><button class="btn gold small" onclick="App.${accion}('${e.id}')">${label}</button></td>
+    </tr>`).join('') : `<tr><td colspan="5" style="color:var(--ink-soft);">Sin pendientes.</td></tr>`;
+
+  const filasPublicados = publicados.length ? publicados.map(e => `
+    <tr><td>${escapeHTML(e.numero)}</td><td>${escapeHTML(e.objeto.slice(0,60))}${e.objeto.length>60?'…':''}</td>
+      <td>${fmtDate(e.fechaInicio)}</td><td>${e.registrado?'<span class="chip ok">Sí</span>':'<span class="chip aviso">No</span>'}</td></tr>
+  `).join('') : `<tr><td colspan="4" style="color:var(--ink-soft);">Todavía no hay expedientes publicados.</td></tr>`;
+
+  return `
+    <div class="panel" style="margin-bottom:20px;">
+      <div class="panel-head"><div><h3>Pendientes de publicación en el Perfil del Contratante</h3>
+        <div class="hint">Expedientes fuera de borrador que aún no han sido publicados</div></div></div>
+      <div class="panel-body" style="padding:0;">
+        <table><thead><tr><th>Expediente</th><th>Objeto</th><th class="tright">Importe</th><th>Estado</th><th></th></tr></thead>
+        <tbody>${filaPend(pendPublicar, 'marcarPublicado', 'Publicar')}</tbody></table>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-bottom:20px;">
+      <div class="panel-head"><div><h3>Pendientes de inscripción registral</h3>
+        <div class="hint">Expedientes con base superior a ${fmtEUR(CONFIG.umbralRegistro)} que requieren registro</div></div></div>
+      <div class="panel-body" style="padding:0;">
+        <table><thead><tr><th>Expediente</th><th>Objeto</th><th class="tright">Importe</th><th>Estado</th><th></th></tr></thead>
+        <tbody>${filaPend(pendRegistrar, 'marcarRegistrado', 'Registrar')}</tbody></table>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><div><h3>Publicados en el perfil del contratante</h3></div></div>
+      <div class="panel-body" style="padding:0;">
+        <table><thead><tr><th>Expediente</th><th>Objeto</th><th>Fecha de inicio</th><th>Registrado</th></tr></thead>
+        <tbody>${filasPublicados}</tbody></table>
+      </div>
+    </div>
+  `;
+}
+
+/* =========================================================================
+   RENDER — FISCALIDAD Y MODELO 347
+   ========================================================================= */
+
+function renderFiscalidad(state){
+  const all = state.expedientes;
+  const filas = all.map(e => {
+    const fisc = calcularFiscal(e);
+    return `
+    <tr>
+      <td>${escapeHTML(e.numero)}</td>
+      <td>${e.adjudicatario?escapeHTML(e.adjudicatario.empresa):'—'}</td>
+      <td>${e.adjudicatario?escapeHTML(categoriaFiscalLabel(e.adjudicatario.categoriaFiscal)):'—'}</td>
+      <td class="num">${fmtEUR(fisc.base)}</td>
+      <td class="num">${fisc.ivaRate}%</td>
+      <td class="num">${fmtEUR(fisc.retencion)}</td>
+      <td class="num"><strong>${fmtEUR(fisc.neto)}</strong></td>
+    </tr>`;
+  }).join('');
+
+  const r347 = resumen347(all);
+  const filas347 = r347.length ? r347.map(r => `
+    <tr>
+      <td>${escapeHTML(r.empresa)}</td><td>${escapeHTML(r.nif)}</td>
+      <td class="num">${fmtEUR(r.total)}</td>
+      <td>${r.obligacion?'<span class="chip aviso">Sujeto a declaración</span>':'<span class="chip ok">No alcanza el umbral</span>'}</td>
+    </tr>`).join('') : `<tr><td colspan="4" style="color:var(--ink-soft);">Sin adjudicatarios registrados en el ejercicio.</td></tr>`;
+
+  return `
+    <div class="panel" style="margin-bottom:20px;">
+      <div class="panel-head"><div><h3>Detalle fiscal por expediente</h3><div class="hint">IVA, retención IRPF y neto a pagar</div></div></div>
+      <div class="panel-body" style="padding:0;">
+        <table>
+          <thead><tr><th>Expediente</th><th>Adjudicatario</th><th>Categoría fiscal</th><th class="tright">Base</th><th class="tright">IVA</th><th class="tright">Retención</th><th class="tright">Neto</th></tr></thead>
+          <tbody>${filas}</tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><div><h3>Resumen modelo 347</h3>
+        <div class="hint">Acumulado anual por proveedor. Obligación informativa a partir de ${fmtEUR(CONFIG.umbral347)}, IVA incluido</div></div></div>
+      <div class="panel-body" style="padding:0;">
+        <table>
+          <thead><tr><th>Proveedor</th><th>NIF</th><th class="tright">Acumulado anual (con IVA)</th><th>Situación</th></tr></thead>
+          <tbody>${filas347}</tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+/* =========================================================================
+   RENDER — UMBRALES Y FRACCIONAMIENTO
+   ========================================================================= */
+
+function renderUmbrales(state){
+  const all = state.expedientes;
+  const grupos = {};
+  all.forEach(e => {
+    const key = e.familia + '||' + e.tipo;
+    if(!grupos[key]) grupos[key] = { familia:e.familia, tipo:e.tipo, expedientes:[] };
+    grupos[key].expedientes.push(e);
+  });
+
+  const bloques = Object.values(grupos).map(g => {
+    const limite = limiteFor(g.tipo);
+    const masReciente = g.expedientes.slice().sort((a,b)=> new Date(b.fechaInicio)-new Date(a.fechaInicio))[0];
+    const frac = familiaAcumulada(masReciente, all);
+    const pct = Math.min(100, Math.round(frac.ratio*100));
+    const cls = frac.ratio>=1 ? 'bad' : (frac.ratio>=0.85 ? 'warn' : '');
+    const nivel = frac.ratio>=1 ? '<span class="chip bloqueante">Supera el límite</span>' : (frac.ratio>=0.85 ? '<span class="chip aviso">Próximo al límite</span>' : '<span class="chip ok">Sin riesgo</span>');
+    const filas = frac.relacionados.slice().sort((a,b)=> new Date(b.fechaInicio)-new Date(a.fechaInicio)).map(e => `
+      <tr><td>${escapeHTML(e.numero)}</td><td>${fmtDate(e.fechaInicio)}</td><td class="num">${fmtEUR(e.base)}</td></tr>`).join('');
+    return `
+      <div class="panel" style="margin-bottom:16px;">
+        <div class="panel-head">
+          <div><h3>${escapeHTML(g.familia)}</h3><div class="hint">${escapeHTML(etiquetaTipo(g.tipo))} · Límite ${fmtEUR(limite)}, sin IVA</div></div>
+          ${nivel}
+        </div>
+        <div class="panel-body">
+          <div style="display:flex; justify-content:space-between; font-size:12.5px; margin-bottom:6px;">
+            <span>Acumulado 12 meses (referencia: ${fmtDate(masReciente.fechaInicio)})</span>
+            <span class="num">${fmtEUR(frac.total)} / ${fmtEUR(frac.limite)} (${pct}%)</span>
+          </div>
+          <div class="progress ${cls}" style="margin-bottom:14px;"><div style="width:${pct}%;"></div></div>
+          <table><thead><tr><th>Expediente</th><th>Fecha de inicio</th><th class="tright">Base</th></tr></thead><tbody>${filas}</tbody></table>
+        </div>
+      </div>`;
+  }).join('');
+
+  return bloques || `<div class="empty-state"><div class="big">Sin datos</div>No hay expedientes registrados todavía.</div>`;
+}
+
+/* =========================================================================
+   RENDER — CONFIGURACIÓN
+   ========================================================================= */
+
+function renderConfiguracion(state){
+  return `
+    <div class="row2" style="align-items:start;">
+      <div class="panel">
+        <div class="panel-head"><h3>Datos de la entidad</h3></div>
+        <div class="panel-body">
+          <div class="field"><label>Nombre de la entidad</label>
+            <input type="text" value="${escapeHTML(CONFIG.entidad)}" onchange="App.guardarConfigCampo('entidad', this.value)"></div>
+          <div class="field"><label>CIF</label>
+            <input type="text" value="${escapeHTML(CONFIG.cif)}" onchange="App.guardarConfigCampo('cif', this.value)"></div>
+          <div class="field"><label>Sede electrónica / dirección</label>
+            <input type="text" value="${escapeHTML(CONFIG.sede)}" onchange="App.guardarConfigCampo('sede', this.value)"></div>
+          <div class="field"><label>Titular de Secretaría-Intervención</label>
+            <input type="text" value="${escapeHTML(CONFIG.secretaria)}" onchange="App.guardarConfigCampo('secretaria', this.value)"></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h3>Umbrales y parámetros normativos</h3></div>
+        <div class="panel-body">
+          <div class="row2">
+            <div class="field"><label>Límite obra (€, sin IVA)</label>
+              <input type="number" value="${CONFIG.umbralObra}" onchange="App.guardarConfigCampo('umbralObra', this.value)"></div>
+            <div class="field"><label>Límite servicio (€, sin IVA)</label>
+              <input type="number" value="${CONFIG.umbralServicio}" onchange="App.guardarConfigCampo('umbralServicio', this.value)"></div>
+          </div>
+          <div class="row2">
+            <div class="field"><label>Límite suministro (€, sin IVA)</label>
+              <input type="number" value="${CONFIG.umbralSuministro}" onchange="App.guardarConfigCampo('umbralSuministro', this.value)"></div>
+            <div class="field"><label>Duración máxima (meses)</label>
+              <input type="number" value="${CONFIG.duracionMaxMeses}" onchange="App.guardarConfigCampo('duracionMaxMeses', this.value)"></div>
+          </div>
+          <div class="row2">
+            <div class="field"><label>IVA por defecto (%)</label>
+              <select onchange="App.guardarConfigCampo('ivaDefault', this.value)">
+                ${IVA_OPCIONES.map(v=>`<option value="${v}" ${CONFIG.ivaDefault===v?'selected':''}>${v}%</option>`).join('')}
+              </select></div>
+            <div class="field"><label>Umbral de registro obligatorio (€)</label>
+              <input type="number" value="${CONFIG.umbralRegistro}" onchange="App.guardarConfigCampo('umbralRegistro', this.value)"></div>
+          </div>
+          <div class="field desc" style="margin-top:4px;">Los cambios se aplican de inmediato al cálculo de nuevos expedientes y a las alertas de umbral y fraccionamiento.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-top:16px;">
+      <div class="panel-head">
+        <div><h3>Almacenamiento local</h3>
+          <div class="hint">Los expedientes y la configuración se guardan automáticamente en este navegador (localStorage)</div></div>
+        <span class="chip ${storageDisponible() ? 'ok' : 'bloqueante'}">${storageDisponible() ? 'Guardado automático activo' : 'No disponible en este navegador'}</span>
+      </div>
+      <div class="panel-body">
+        <p style="font-size:12.5px; color:var(--ink-soft); margin-top:0;">
+          Estos datos quedan ligados a este equipo y navegador: no se sincronizan entre usuarios ni dispositivos.
+          Para compartir expedientes entre varios puestos de Secretaría, Intervención y Alcaldía, es necesario un
+          backend centralizado (ver documentación adjunta, <code>contratomenor-backend-esqueleto.js</code>).
+        </p>
+        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+          <button class="btn secondary" onclick="App.exportarCopiaSeguridad()">Exportar copia de seguridad (.json)</button>
+          <button class="btn secondary" onclick="document.getElementById('inputImportar').click()">Importar copia de seguridad</button>
+          <input type="file" id="inputImportar" accept="application/json" style="display:none;" onchange="App.importarCopiaSeguridad(this)">
+          <button class="btn danger" onclick="App.restablecerDatosEjemplo()">Restablecer datos de ejemplo</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/* =========================================================================
+   ARRANQUE
+   ========================================================================= */
+
+App.init();
+
+</script>
+</body>
+</html>
